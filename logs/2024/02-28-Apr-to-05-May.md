@@ -1,3 +1,11 @@
+## Table of Contents
+
+- [Difference between Captions & Subtitles](#difference-between-captions--subtitles)
+- [Adding captions and subtitles to HTML video](#adding-captions-and-subtitles-to-html-video-1)
+- [Video Transcription](#video-transcription)
+- [Using Sanity CMS with Next.js App Router](#using-sanity-cms-with-nextjs-app-router-4)
+
+
 ## Difference between Captions & Subtitles
 
 It's a subtle one, but they are not the same. Captions are generally directed to people with hearing disabilities and specific to how they can interpret sounds via words, whereas subtitles are under the consideration that the person can hear but cannot understand the foreign language the audio is in.
@@ -28,7 +36,7 @@ p.s. Transcribing is the process of writing out a copy of something, while trans
 
 Have been using this for a while, really handy with clients who are looking for a custom solution with control over the content of the website (blogs, posts, team members, others...). 
 
-Setup is straight forward, but writing the configs, schemas and queries does become time consuming for each new project (given how often I tend to use it with clients). Currently planning to create a template repo with next.js, sanity, shadcn-ui, eslist, prettier & husky for future usage, would make things a bit easier.
+Setup is straight forward, but writing the configs, schemas and queries does become time consuming for each new project (given how often I tend to use it with clients). Currently planning to create a template repo with next.js, sanity, shadcn-ui, eslist, prettier & husky for future usage, would make things a bit easier. (Hoping to finish this by next week!)
 
 The steps are straightforward to 
 
