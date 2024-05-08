@@ -46,6 +46,28 @@ Got to understand the difference between these 3 and how to use them. `:focus` i
 
 References: [^3], [^4], [^5], [^6]
 
+## Styling Scrollbar with Tailwind Classes
+
+Right now the tailwind libarary doesn't have any class name supports for styling scrollbars, there is a plugin that I came across however. 
+
+`tailwind-scrollbar` - https://www.npmjs.com/package/tailwind-scrollbar. Intall it and add it to your `tailwind.config.js` plugins and you can style the width, and the color of the track, thumb and corner.
+
+Before using it, it's better to understand the anatomy of a scrollbar and how to style it - check this out for more information - https://developer.chrome.com/docs/css-ui/scrollbar-styling.
+
+Intall - `npm install --save-dev tailwind-scrollbar`
+
+Use it in your tailwind plugins
+
+```js
+module.exports = {
+    // other configuration...
+    plugins: [
+        // other plugins...
+        require('tailwind-scrollbar'),
+    ],
+};
+```
+
 [^1]: Template Object Documentation (Next.js) - https://nextjs.org/docs/app/api-reference/functions/generate-metadata#template-object
 [^2]: `absolute` property in template object (Next.js) - https://nextjs.org/docs/app/api-reference/functions/generate-metadata#absolute
 [^3]: Article on focus psuedo selectors - https://bharathvaj-ganesan.medium.com/focus-vs-focus-within-vs-focus-visible-2db18593495b
