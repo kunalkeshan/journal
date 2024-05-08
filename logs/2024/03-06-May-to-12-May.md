@@ -2,6 +2,7 @@
 
 - [Template Object in Next.js Metadata Configuration](#template-object-in-nextjs-metadata-configuration-1)
 - [Focus, Focus Within, Focus Visible Psuedo Selectors](#focus-focus-within-focus-visible-psuedo-selectors)
+- [Styling Scrollbar with Tailwind Classes](#styling-scrollbar-with-tailwind-classes)
 
 ## Template Object in Next.js Metadata Configuration [^1]
 
