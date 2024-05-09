@@ -2,7 +2,7 @@
 
 Finally got around to reading this amazing article - https://nvie.com/posts/a-successful-git-branching-model/. It's explains a mental model around how you can manage your branches and keep them aligned with your features, releases, bugs and hotfixes while maintaining a separate production and development states parallelly. 
 
-TODO: Add Image here
+![Git-branching-model_page-0001](https://github.com/kunalkeshan/journal/assets/68579547/a53a5f25-c1e8-4271-b3ac-acb6e502d9bb)
 
 Helped revise some old concepts on different ways merges take place - fast-forward, rebase, squash and others. And also understand the need to the `--no-ff` flag while merging branches [^1]. This flag places all the commits in branch it stemped from into a new single commit unlike fast-forward that just places the commit into the same branch of the HEAD.
 
