@@ -8,6 +8,8 @@ Learned the term `rc` (Release Candidate) and tagging using it.
 
 eg: 
 
-`rc-v1.1-branch-name` shows that the next version (v1.1) is a possible relase candidate from the branch (branch name). 
+`v1.1-rc-branch-name` shows that the next version (v1.1) is a possible relase candidate from the branch (branch name). 
 
 Cool Stuff.
+
+edit: `rc` comes after the version
