@@ -23,10 +23,17 @@ Even after configuring the environment and file-specific environments, still was
 
 Setting it up from the Next.js docs was straight forward and didn't take much time to write the tests as it had common things that could be replicated from Jest. 
 
-For now I've used to to run SEO optimization tests on all pages for all locales in the Sundar Clinic Repo, and playing around with the component testing which by the way is working fine with next-intl, so looking forward to using this in other projects as well. 
+For now, I've used to to run SEO optimization tests on all pages for all locales in the Sundar Clinic Repo, and playing around with the component testing which by the way is working fine with next-intl, so looking forward to using this in other projects as well. 
+
+Also if there's too many tests to run, you can run specific files alone using the `--spec` flag in the cypress CLI. [^6]
+
+```bash
+npx cypress run –spec “cypress/integration/sanity.cy.js”
+```
 
 [^1]: https://nextjs.org/docs/app/building-your-application/testing/jest
 [^2]: [How To Resolve The Error 'Textencoder Is Not Defined Jest’](https://www.dhiwise.com/post/how-to-resolve-the-error-textencoder-is-not-defined-jes)
 [^3]: https://nextjs.org/docs/pages/building-your-application/testing/playwright
 [^4]: https://playwright.dev/docs/test-components
 [^5]: https://nextjs.org/docs/pages/building-your-application/testing/cypress
+[^6]: https://www.browserstack.com/guide/cypress-skip-test
