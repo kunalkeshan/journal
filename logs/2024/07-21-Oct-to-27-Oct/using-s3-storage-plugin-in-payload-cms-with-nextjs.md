@@ -15,3 +15,4 @@ Difference I faced were:
 ## Other References 
 
 1. [How to deploy PayloadCMS to Digitialocean and connect to S3 bucket](https://www.showwcase.com/article/18570/how-to-deploy-payloadcms-to-digitialocean-and-connect-to-s3-bucket)
+2. [Payload CMS Setup Tutorial Part 4: Adding S3 Object Storage for file uploads](https://www.youtube.com/watch?v=25BCE_hx2yA)
