@@ -5,3 +5,4 @@ Got sidetracked last week, and this week a bit occupied with college internals, 
 If I can make time, then,
 
 - Cryptography (cause I wanna build a env storage site for myself)
+- next week for sure 😭
