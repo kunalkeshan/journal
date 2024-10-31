@@ -5,3 +5,4 @@ Came back home for Diwali celebrations, having other plans amoung other things. 
 This week will make time to explore on 
 
 - Cryptography (fs 😅)
+- a bit of react native ig
