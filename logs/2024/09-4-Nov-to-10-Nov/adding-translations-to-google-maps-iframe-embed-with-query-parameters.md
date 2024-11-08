@@ -46,4 +46,8 @@ To populate the locale variable, you can use methods such as:
 - Detecting the user’s browser language via `navigator.language`. [^1]
 - Setting the language based on user preferences stored in a state or configuration file.
 
+### Other References
+
+- Code implementation at [Sundar Clinic's](https://sundarclinic.com/) Website: [Footer.tsx#L86](https://github.com/Sundar-Clinic/Main-Website/blob/bdcdefc1afa58bdd9d3228f32041c4892d2c9aae/layouts/Footer.tsx#L86)
+
 [^1]: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language
