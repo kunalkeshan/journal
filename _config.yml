@@ -1,7 +1,7 @@
 markdown_ext: "md"
 include: []
 permalink: /:path/
-theme: jekyll-theme-cayman
+theme: jekyll-theme-architect
 defaults:
   - scope: 
       path: ""
