@@ -1,9 +1,3 @@
----
-title: "Editing Time for Past Commit Messages"
-description: "Learn how to adjust Git commit timestamps using `GIT_AUTHOR_DATE` and `GIT_COMMITTER_DATE`. This guide provides examples, supported date formats, and tips for managing commit history. Perfect for developers looking to refine their version control workflow."
-layout: default
----
-
 ## Editing Time for Past Commit Messages [^1]
 
 Okay, so sometimes we don't always work on time, and we pretend to do the work right 😅. Knowing that you can do the work on time, but need to show proof that you did it in the past, found this way to edit the commit time on your commit history.
