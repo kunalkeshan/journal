@@ -1,0 +1,131 @@
+## Uploading PDF Files to S3 via Signed URL in Next.js
+
+### Overview
+
+This document outlines the steps to upload PDF files from a Next.js application to an S3 bucket using a signed URL [^1]. It includes prerequisites, detailed steps for implementation, and potential bugs that may arise during the process.
+
+### Prerequisites
+
+- **AWS Account**: You need an active AWS account.
+- **S3 Bucket**: Create an S3 bucket where you will store the uploaded files.
+- **IAM User**: Create an IAM user with programmatic access and permissions to use S3 (specifically `s3:PutObject`).
+- **Next.js Application**: A working Next.js application setup.
+- **Environment Variables**: Set up the following environment variables in your `.env.local` file:
+
+```env
+S3_ACCESS_KEY=your_access_key
+S3_SECRET_KEY=your_secret_key
+S3_BUCKET_NAME=your_bucket_name
+S3_REGION=your_region
+```
+
+
+### Steps to Implement
+
+#### Step 1: Install Required Packages
+
+In your Next.js project, install the necessary AWS SDK packages [^2][^3]:
+
+```bash
+npm install @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
+```
+
+#### Step 2: Create API Route to Generate Signed URL
+
+Create a new file at `app/api/presigned-url/route.ts` [^4] and add the following code:
+
+```typescript
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { NextRequest } from "next/server";
+
+const client = new S3Client({
+  region: process.env.S3_REGION,
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY,
+    secretAccessKey: process.env.S3_SECRET_KEY,
+  },
+});
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const fileName = searchParams.get("file");
+
+  if (!fileName) {
+    return Response.json({ error: "File query parameter is required" }, { status: 400 });
+  }
+
+  const command = new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: fileName,
+  });
+
+  const url = await getSignedUrl(client, command, { expiresIn: 60 });
+
+  return Response.json({ presignedUrl: url });
+}
+```
+
+#### Step 3: Upload File from Client Side
+
+On the client side, use the generated signed URL to upload files. Here’s an example using Fetch API:
+
+```typescript
+async function uploadFile(file) {
+  const currentTime = Date.now();
+  const fileName = `${file.name}-${currentTime}`; // Append current time to the file name
+
+  // Get presigned URL
+  const response = await fetch(`/api/presigned-url?file=${encodeURIComponent(fileName)}`);
+  const data = await response.json();
+
+  if (data.presignedUrl) {
+    // Upload the file to S3 using the presigned URL
+    const uploadResponse = await fetch(data.presignedUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type,
+      },
+    });
+
+    if (uploadResponse.ok) {
+      console.log('File uploaded successfully:', data.presignedUrl);
+      return data.presignedUrl; // Return the S3 link or key as needed
+    } else {
+      console.error('Upload failed:', uploadResponse.statusText);
+    }
+  } else {
+    console.error('Failed to get presigned URL:', data.error);
+  }
+}
+```
+
+### Setting Up Lifecycle Policy for Cleanup
+
+- To delete PDF files in the "pdfs" folder after they have been stored for 30 days from their creation date:
+- Sign in to AWS Management Console and navigate to S3.
+- Select your bucket and go to the Management tab.
+- Click on Create lifecycle rule. [^5]
+- Name your rule (e.g., "DeletePDFsAfter30Days").
+- Limit the scope to specific prefixes and enter pdfs/.
+- Under lifecycle rule actions, select Expire current versions of objects and set it to delete objects after 30 days from creation.
+- Review and create the rule.
+
+### Possible Bugs
+
+- Invalid AWS Credentials: Ensure that your AWS access key and secret key are correct and have sufficient permissions.
+- CORS Issues: If you encounter CORS errors when uploading files, ensure your S3 bucket has the correct CORS configuration. [^6]
+- Network Issues: Uploads may fail due to network connectivity problems; handle such errors gracefully in your application.
+- File Size Limitations: Ensure that you are aware of any size limitations imposed by your application or AWS services.
+
+### Conclusion
+
+By following this guide, you can successfully implement file uploads from a Next.js app to an S3 bucket using signed URLs and set up lifecycle policies for automatic cleanup of old files.
+
+[^1]: https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html
+[^2]: https://www.npmjs.com/package/@aws-sdk/client-s3
+[^3]: https://www.npmjs.com/package/@aws-sdk/s3-request-presigner
+[^4]: https://nextjs.org/docs/app/building-your-application/routing/route-handlers
+[^5]: https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html
+[^6]: https://docs.aws.amazon.com/AmazonS3/latest/userguide/cors.html
