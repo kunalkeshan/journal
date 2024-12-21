@@ -1,0 +1,31 @@
+---
+title: Masking Images Using SVGs
+description: Learn how to enhance your images by applying SVG masks. Follow this guide to use the CSS mask-image property for creative and dynamic image presentations.
+date: 2024-05-13
+---
+
+# Masking Images Using SVGS
+
+Sometimes plain images are boring, having a pattern around, inside or surrounding an image can bring out a different aspect of the image compared to just leaving the image plain on the website. 
+
+Masking images or applying a pattern around a image based on some other image or svg can be helpful and there is just a property that is helpful in such cases. 
+
+The `mask-image` [^1] property allows you to mask images, and svgs over other images. Meaning this property is valid for image tags and the target mask being applied to an image. 
+
+My use case was to apply a svg pattern over an image and it was quite straightforward, [^2] and [^3] 
+
+- Get your SVG in the same file preferable as the image. 
+- Apply `width` and `height` properties of the SVG tag to be 0.
+- Wrap the contents of the SVG Tag with the `mask` tag with an id attribute. eg: `id="mask"`.
+- Apply the CSS Property to mask the SVG over an image. 
+  ```css
+  image {
+    mask-image: url(#mask);
+  }
+  ```
+
+and watch the magic happen.
+
+[^1]: `mask-image` on MDN: https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image
+[^2]: https://blog.logrocket.com/css-mask-image-property/
+[^3]: https://web.dev/articles/css-masking#masking_with_svg

@@ -1,0 +1,110 @@
+---
+title: Using Nginx to Reverse Proxy
+description: Learn how to use Nginx as a reverse proxy server. Follow this guide to set up Nginx, configure reverse proxy settings, and understand its benefits for load balancing, security, and caching.
+date: 2024-11-20
+---
+
+# Using Nginx to Reverse Proxy
+
+## What is Nginx? [^1]
+
+Nginx (pronounced "engine-x") is a high-performance web server, reverse proxy server, and load balancer. 
+
+It is designed to handle a large number of concurrent connections efficiently and is often used to serve static files, manage load balancing, and reverse proxying requests to backend servers.
+
+## What is Reverse Proxy?
+
+A reverse proxy is a server that sits between client devices (like browsers or mobile apps) and backend servers. 
+
+Its primary job is to forward client requests to appropriate backend services and return the server's response to the client.
+
+**Key benefits**:
+
+- Load Balancing: Distribute traffic across multiple servers to optimize performance.
+- Security: Hide the details of backend servers from clients, making it harder for attackers to target them directly.
+- SSL Termination: Handle SSL/TLS encryption and decryption.
+- Caching: Cache content to improve response times and reduce load on backend servers.
+
+## Implementing Reverse Proxy
+
+- Installing nginx [^2]
+
+On Ubuntu/Debian:
+
+```shell
+sudo apt update
+sudo apt install nginx
+```
+
+On CentOS/Red Hat:
+
+```shell
+sudo yum install nginx
+```
+
+Or visit [nginx: download](https://nginx.org/en/download.html) to find a relevant version.
+
+- Create the configuration
+
+```conf
+# Main context directives
+worker_processes auto;  # Automatically set number of worker processes
+
+events {
+    worker_connections 1024;  # Maximum number of simultaneous connections
+}
+
+http {
+  server {
+      listen 80;  # Listen on port 80 for incoming requests
+
+      location /api/v1/users {
+          proxy_pass http://localhost:8080/api/v1/users;  # Forward to localhost:8080/api/v1/users
+          proxy_set_header Host $host;                  # Preserve the original Host header
+          proxy_set_header X-Real-IP $remote_addr;     # Pass the real client IP
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;  # Add forwarded IPs
+      }
+
+      location /api/v1/products {
+          proxy_pass http://localhost:8081/api/v1/products;  # Forward to localhost:8081/api/v1/products
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      }
+
+      location /api/v1/orders {
+          proxy_pass http://localhost:8082/api/v1/orders;  # Forward to localhost:8082/api/v1/orders
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      }
+  }
+}
+```
+
+- Explanation
+  - `worker_processes auto;`: Dynamically determines the optimal number of worker processes based on the number of CPU cores available.
+  - `worker_connections 1024;`: Sets the maximum number of simultaneous connections each worker process can handle. This effectively determines the total concurrent connections supported.
+  - `listen 80;`: Tells Nginx to listen for incoming HTTP requests on port 80 (default for non-secure HTTP traffic).
+  - `location /api/v1/users`: Matches any request whose path starts with `/api/v1/users`.
+  - `proxy_pass http://localhost:8080/api/v1/users;`: Forwards the request to the backend service running on localhost (the same machine as Nginx) at port 8080.
+  - `proxy_set_header Host $host;`: Ensures the backend server sees the original Host header sent by the client.
+  - `proxy_set_header X-Real-IP $remote_addr;`: Passes the actual IP address of the client to the backend, making it available for logging or debugging.
+  - `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`: Appends the client IP to the X-Forwarded-For header. This is useful for tracking client requests in a chain of proxies.
+
+- Run nginx
+
+```shell
+nginx -g 'daemon off;'
+```
+
+Starts nginx and prevents it from running as a background process.
+
+Alternatively, start Nginx as a service:
+
+```shell
+sudo systemctl start nginx
+```
+
+[^1]: [Beginner’s Guide](https://nginx.org/en/docs/beginners_guide.html)
+[^2]: [Installing Nginx on Windows — A Step-by-Step Guide](https://medium.com/@chandramuthuraj/installing-nginx-on-windows-a-step-by-step-guide-6750575c63e2)

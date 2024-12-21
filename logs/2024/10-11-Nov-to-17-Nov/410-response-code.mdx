@@ -1,0 +1,17 @@
+---
+title: Understanding the 410 Response Code
+description: Learn about the 410 response code in HTTP, its significance, and when to use it. Understand how it differs from the 404 status code and its impact on clients and search engines.
+date: 2024-11-15
+---
+
+# 410 Response Code
+
+I never had a chance to use it until recently. The `410` response code signifies that something is deleted and unable to view for a response and should not be requested again by the client. 
+
+For more information:
+
+> 410 Gone Indicates that the resource requested is no longer available and will not be available again. This should be used when a resource has been intentionally removed and the resource should be purged. Upon receiving a 410 status code, the client should not request the resource again in the future. Clients such as search engines should remove the resource from their indices. Most use cases do not require clients and search engines to purge the resource, and a "410" status code is used only when there is a reasonable chance that the resource will be available again in the future. If a resource is permanently unavailable, the status code 404 Not Found should be used instead
+>
+> Reference from MDN [^1]
+
+[^1]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/410

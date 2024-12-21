@@ -1,0 +1,19 @@
+---
+title: Adding captions and subtitles to HTML video
+description: Exploring the WebVTT API and the track tags for adding captions and subtitles to HTML video
+date: 2024-05-09
+---
+
+# Adding captions and subtitles to HTML video [^1]
+
+Exploring the WebVTT API and the track tags. Both can be used as per preference. I've yet to implement it as of today (30th April), was exploring this as part of a solution of what to do post subtitle generation from the video.
+
+Previously I would've gone with rendering the subtitles as part of the video, but the problem statement includes that the user can edit these subtitles at a later point. 
+
+Hence a better approach would be to store the subtitles as a .vtt file and feed it into the video tag via tracks. I see this as
+
+1. It saves time to not have to render the video over and over for different subtitles, only the `.vtt` file is enough to be modified.
+2. Can be used on both user and customer front, sort of drops the need for a video transcoding tools like `ffmpeg` for now.
+3. Saves computing time that rendering will take, it's easier and quicker to edit a text file than modify the whole video.
+
+[^1]: MDN Article on Adding captions and subtitles to HTML video - https://developer.mozilla.org/en-US/docs/Web/Media/Audio_and_video_delivery/Adding_captions_and_subtitles_to_HTML5_video
