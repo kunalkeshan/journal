@@ -3,6 +3,7 @@ import path from 'path';
 import getAllMarkdownFiles from './get-all-md-files';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import { LogMetadata } from '@/types/logs';
+import { kebabToTitleCase } from './utils';
 
 interface GetLatestMarkdownFilesArgs {
 	dirPath: string; // e.g. path.join(process.cwd(), 'logs')
@@ -133,7 +134,11 @@ const getLatestMarkdownFiles: GetLatestMarkdownFilesFunction = async ({
 
 				result.push({
 					slug: slugWithoutExt,
-					image: `/thumbnails/${path.parse(filePath).name}.png`,
+					image: encodeURI(
+						`/api/og?title=${kebabToTitleCase(
+							path.parse(filePath).name
+						)}`
+					),
 					frontmatter: {
 						...frontmatter,
 						...(frontmatter?.date && {

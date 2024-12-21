@@ -3,6 +3,7 @@ import path from 'path';
 import getAllMarkdownFiles from './get-all-md-files';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import { LogMetadata } from '@/types/logs';
+import { kebabToTitleCase } from './utils';
 
 interface GetAllMdFilesDataArgs {
 	dirPath: string; // e.g. path.join(process.cwd(), 'logs')
@@ -120,7 +121,11 @@ export async function getAllMdFilesData({
 
 				allEntries.push({
 					slug: slugWithoutExt,
-					image: `/thumbnails/${path.parse(filePath).name}.png`,
+					image: encodeURI(
+						`/api/og?title=${kebabToTitleCase(
+							path.parse(filePath).name
+						)}`
+					),
 					frontmatter,
 				});
 			}
