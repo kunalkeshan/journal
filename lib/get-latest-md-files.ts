@@ -1,16 +1,21 @@
 import fs from 'fs';
 import path from 'path';
 import getAllMarkdownFiles from './get-all-md-files';
+import { compileMDX } from 'next-mdx-remote/rsc';
+import { LogMetadata } from '@/types/logs';
 
 interface GetLatestMarkdownFilesArgs {
-	dirPath: string;
-	minFiles?: number;
-	maxFiles?: number;
+	dirPath: string; // e.g. path.join(process.cwd(), 'logs')
+	minFiles?: number; // default is 5
+	maxFiles?: number; // default is 10
 }
 
+/**
+ * We now only return the file path and the frontmatter object.
+ */
 interface GetLatestMarkdownFilesResponse {
-	filePath: string;
-	content: string;
+	slug: string;
+	frontmatter: LogMetadata | null;
 }
 
 type GetLatestMarkdownFilesFunction = (
@@ -18,35 +23,31 @@ type GetLatestMarkdownFilesFunction = (
 ) => Promise<GetLatestMarkdownFilesResponse[]>;
 
 const getLatestMarkdownFiles: GetLatestMarkdownFilesFunction = async ({
-	dirPath, // e.g. path.join(process.cwd(), 'logs')
-	minFiles = 5, // min number of md files we want
-	maxFiles = 10, // max number of md files we want
+	dirPath,
+	minFiles = 5,
+	maxFiles = 10,
 }) => {
-	// 1) Gather all .md files from logs
+	// 1) Gather all .md / .mdx files from logs
 	const allMarkdownPaths = getAllMarkdownFiles(dirPath);
-	//   e.g. [ "/full/path/logs/2024/01-21-Apr-to-27-Apr/fileA.md", "/full/path/logs/2024/02-28-Apr-to-05-May/fileX.md", ... ]
+	// e.g. ["/full/path/logs/2024/01-21-Apr-to-27-Apr/fileA.md", ...]
 
 	// 2) Group by year/week so we can sort them easily
-	//    We'll parse year from the path segment and the week folder from the next segment
-	//    Something like: "logs/2024/03-06-May-to-12-May/foo.md"
-	//    => year=2024, weekFolder="03-06-May-to-12-May"
 	const yearWeekMap: Record<string, Record<string, string[]>> = {};
 
 	for (const mdPath of allMarkdownPaths) {
-		// logs/2024/03-06-May-to-12-May/some.md
+		// relative => "2024/03-06-May-to-12-May/some.md"
 		const relative = path.relative(dirPath, mdPath);
-		// => "2024/03-06-May-to-12-May/some.md"
-		const parts = relative.split(path.sep); // => ["2024", "03-06-May-to-12-May", "some.md"]
+		const parts = relative.split(path.sep);
+		// => ["2024", "03-06-May-to-12-May", "some.md"]
 		const [yearStr, weekFolder] = parts;
-		const year = yearStr;
 
-		if (!yearWeekMap[year]) {
-			yearWeekMap[year] = {};
+		if (!yearWeekMap[yearStr]) {
+			yearWeekMap[yearStr] = {};
 		}
-		if (!yearWeekMap[year][weekFolder]) {
-			yearWeekMap[year][weekFolder] = [];
+		if (!yearWeekMap[yearStr][weekFolder]) {
+			yearWeekMap[yearStr][weekFolder] = [];
 		}
-		yearWeekMap[year][weekFolder].push(mdPath);
+		yearWeekMap[yearStr][weekFolder].push(mdPath);
 	}
 
 	// 3) Sort the years descending. e.g. 2025 => 2024 => 2023 ...
@@ -54,33 +55,31 @@ const getLatestMarkdownFiles: GetLatestMarkdownFilesFunction = async ({
 		(a, b) => Number(b) - Number(a)
 	);
 
-	// 4) We need to figure out the "current year" and "current week folder"
+	// 4) Calculate "current year" and "current week index"
 	const currentYear = new Date().getFullYear();
-	// Simple approach to define "current week folder index" (1-based):
-	// (This is not a perfect ISO-week approach, it's just an example.)
 	const today = new Date();
 	const startOfYear = new Date(currentYear, 0, 1);
 	const dayOfYear =
 		Math.floor(
 			(today.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
 		) + 1;
-	const currentWeekIndex = Math.ceil(dayOfYear / 7); // roughly
+	const currentWeekIndex = Math.ceil(dayOfYear / 7);
 
 	// Helper to parse the folder prefix number (e.g. "03-06-May-to-12-May" => 3)
 	function getWeekNumberFromFolder(folderName: string): number {
-		// We assume the folder name starts with NN-
-		// e.g. "03-06-May-to-12-May" => parseInt("03") => 3
+		// We assume folder starts with NN-...
 		const prefix = folderName.split('-')[0];
-		return parseInt(prefix, 10); // might be NaN if can't parse
+		return parseInt(prefix, 10);
 	}
 
-	// 5) We'll iterate over years in descending order, starting at currentYear.
-	//    For each year, we'll get the week folders sorted descending by that NN- prefix.
-	const result: { filePath: string; content: string }[] = [];
+	// 5) Collect results in descending year/week order until we reach min/max
+	const result: GetLatestMarkdownFilesResponse[] = [];
 
 	for (const year of allYears) {
-		if (Number(year) > currentYear) {
-			// skip future years if any
+		const numericYear = Number(year);
+
+		// Skip future years if any
+		if (numericYear > currentYear) {
 			continue;
 		}
 
@@ -91,47 +90,75 @@ const getLatestMarkdownFiles: GetLatestMarkdownFilesFunction = async ({
 			return bWeekNum - aWeekNum; // descending
 		});
 
-		// If this is the current year, we only want to start from "currentWeekIndex" folder or below
+		// For the current year, only consider weeks up to currentWeekIndex
 		let filteredWeekFolders = weekFolders;
-		if (Number(year) === currentYear) {
+		if (numericYear === currentYear) {
 			filteredWeekFolders = weekFolders.filter((wf) => {
 				const wn = getWeekNumberFromFolder(wf);
 				return wn <= currentWeekIndex;
 			});
 		}
 
+		// Iterate each valid folder
 		for (const wf of filteredWeekFolders) {
-			// Add the .md files from this folder
 			const mdPaths = yearWeekMap[year][wf];
 
-			for (const fp of mdPaths) {
-				const fileContents = fs.readFileSync(fp, 'utf8');
+			for (const filePath of mdPaths) {
+				// Example: filePath = "/absolute/logs/2024/03-06-May/entry1.md"
+				const fileContents = fs.readFileSync(filePath, 'utf8');
+
+				// Extract the frontmatter
+				let frontmatter: LogMetadata | null = null;
+				try {
+					const { frontmatter: fm } = await compileMDX<LogMetadata>({
+						source: fileContents,
+						options: {
+							parseFrontmatter: true,
+						},
+					});
+					frontmatter = fm;
+				} catch (err) {
+					console.error(
+						`Error parsing frontmatter in ${filePath}`,
+						err
+					);
+				}
+
+				// Build the slug (relative path without extension)
+				// e.g. "2024/03-06-May/entry1"
+				const relativePath = path.relative(dirPath, filePath);
+				const slugWithoutExt = relativePath.replace(/\.[^.]+$/, '');
+				// remove .md or .mdx extension
+
 				result.push({
-					filePath: fp,
-					content: fileContents,
+					slug: slugWithoutExt,
+					frontmatter: {
+            ...frontmatter,
+            ...(frontmatter?.date && {
+              date: new Date(frontmatter.date),
+            })
+          },
 				});
+
 				if (result.length >= maxFiles) {
-					// We have reached the maximum we want (10).
+					// Reached max needed
 					return result;
 				}
 			}
 
-			// Check if we have at least the minimum.
-			// If yes and we want to stop early, uncomment:
+			// If we have at least minFiles, you could break early if desired:
 			// if (result.length >= minFiles) {
 			//   return result;
 			// }
 		}
 
-		// By the time we finish all the weeks in this year,
-		// if we STILL don't have enough, we move on to the previous year in the next loop iteration.
+		// If we finish the year and have at least minFiles, we can return
 		if (result.length >= minFiles) {
-			// We have at least the minimum needed.
 			return result;
 		}
 	}
 
-	// If we exhaust all years and still don't have enough, return whatever we have.
+	// Return whatever we have if we didn't reach min/max fully
 	return result;
 };
 

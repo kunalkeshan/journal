@@ -28,13 +28,18 @@ async function getMarkdownMetadata(slugs: string[]): Promise<Metadata> {
 	return {
 		...DEFAULT_METADATA,
 		title: frontmatter.title,
+		description: frontmatter.description,
 		openGraph: {
 			...DEFAULT_METADATA.openGraph,
 			title: frontmatter.title,
+			description: frontmatter.description,
+			images: [`/thumbnails/${slugs.pop()}.png`],
 		},
 		twitter: {
 			...DEFAULT_METADATA.twitter,
 			title: frontmatter.title,
+			description: frontmatter.description,
+			images: [`/thumbnails/${slugs.pop()}.png`],
 		},
 	};
 }
