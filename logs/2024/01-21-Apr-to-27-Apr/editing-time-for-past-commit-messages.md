@@ -18,7 +18,7 @@ The GIT_AUTHOR_DATE and GIT_COMMITTER_DATE environment variables support the fol
 
 > **Git internal format**
 > 
-> It is <unix-timestamp> <time-zone-offset>, where <unix-timestamp> is the number of seconds since the UNIX epoch. <time-zone-offset> is a positive or negative offset from UTC. For example CET (which is 1 hour ahead of UTC) is +0100.
+> It is unix-timestamp time-zone-offset, where unix-timestamp is the number of seconds since the UNIX epoch. time-zone-offset is a positive or negative offset from UTC. For example CET (which is 1 hour ahead of UTC) is +0100.
 >
 > **RFC 2822**
 > 
