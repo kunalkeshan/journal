@@ -126,8 +126,8 @@ async function createMdImage(
 			textAlign: 'center',
 			verticalAlign: 'center',
 
-			bgColor: '#ffffff', // white background
-			textColor: '#000000', // black text
+			bgColor: '#333333', // slightly black background
+			textColor: '#f5f5dc', // cream white text
 		});
 
 		// 4. Extract Base64 portion

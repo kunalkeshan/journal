@@ -4,7 +4,7 @@
 const Hero = () => (
 	<div className='w-full'>
 		<div className='container mx-auto'>
-			<div className='flex gap-8 py-20 lg:py-40 items-center justify-center flex-col'>
+			<div className='flex gap-8 py-10 items-center justify-center flex-col px-10 lg:px-20'>
 				<div>
 					{/* <Button variant='secondary' size='sm' className='gap-4'>
 						Read our launch article{' '}

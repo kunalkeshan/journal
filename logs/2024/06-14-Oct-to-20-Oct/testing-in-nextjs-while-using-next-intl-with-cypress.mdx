@@ -1,8 +1,14 @@
-## Testing in Next.js While using Next-Intl
+---
+title: Testing in Next.js While Using Next-Intl with Cypress
+description: Learn how to test Next.js applications using Next-Intl with Cypress. Follow this guide to set up and run tests, handle common issues, and optimize your testing workflow.
+date: 2024-10-21
+---
+
+# Testing in Next.js While using Next-Intl
 
 Never really done tests before, so I thought I'd try it out with the [Sundar Clinic Website Code](https://github.com/Sundar-Clinic/Main-Website). At first, I thought I'd go with [Jest](https://jestjs.io/) in Next.js [^1], failed to get it working as I was getting a couple of errors, 
 
-### Text Encoder & Decoder Error 
+## Text Encoder & Decoder Error 
 
 This was because I was trying to run tests in a different environment (jsdom and node), so I needed to ensure they were configured properly. 
 
@@ -15,11 +21,11 @@ beforeAll(async () => {
 });
 ```
 
-### Unable to run next-intl with jest
+## Unable to run next-intl with jest
 
 Even after configuring the environment and file-specific environments, still was not able to run the tests using Jest over here. So played around with the playwright [^3], but didn't move forward with its component testing is still experimental [^4], then changed to testing with cypress instead [^5].
 
-### Cypress
+## Cypress
 
 Setting it up from the Next.js docs was straight forward and didn't take much time to write the tests as it had common things that could be replicated from Jest. 
 

@@ -1,0 +1,113 @@
+---
+title: Using Docker with Node.js During Development
+description: Learn how to use Docker with Node.js during development. Follow this guide to set up a Docker image, create a Dockerfile, and run a container for a seamless development experience.
+date: 2024-10-06
+---
+
+# Using Docker with Node.js During Development
+
+Guide from official docker[^1] docs was sufficient to get this going.
+
+## Prerequisites
+
+1. Have Node.js Installed. [^2]
+2. Have Docker Installed [^3]
+
+## Create a Docker Image
+
+```Dockerfile
+# Dockerfile.dev
+FROM node:20-alpine
+
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+COPY package.json package.json
+# Was using pnpm workspaces, you can copy the lock file w.r.t your package manager
+COPY package-lock.json package-lock.json
+
+RUN pnpm install
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["pnpm", "run", "dev"]
+```
+
+## Run a container from the image
+
+```yml
+# docker-compose.dev.yml
+services:
+  users:
+    container_name: users
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      users:
+        ipv4_address: 172.18.0.3
+
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    user: postgres
+    environment:
+      - PGUSER=postgres
+      - POSTGRES_DB=app_name
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      users:
+        ipv4_address: 172.18.0.2
+
+volumes:
+  db-data:
+
+networks:
+  users:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
+```
+
+Running the container
+
+```bash
+$ docker compose -f docker-compose.dev.yml up --build
+```
+
+## Notes
+
+Since I used for development purpose, I addded `.dev` extension to each for clear separation of what it's being used for. 
+
+For production docker images I prefer to directly use `Dockerfile` and `docker-compose.yml` instead. 
+
+## Other References
+
+- [How to Set Up Your Local Node.js Development Environment Using Docker](https://www.docker.com/blog/how-to-setup-your-local-node-js-development-environment-using-docker/)
+- [How To Build a Node.js Application with Docker](https://www.digitalocean.com/community/tutorials/how-to-build-a-node-js-application-with-docker)
+
+[^1]: https://docs.docker.com/guides/language/nodejs/develop/
+[^2]: https://nodejs.org/en
+[^3]: https://www.docker.com/

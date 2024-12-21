@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { DEFAULT_METADATA } from '@/config/site';
+import type { Metadata } from 'next';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -12,7 +13,13 @@ const geistMono = Geist_Mono({
 	subsets: ['latin'],
 });
 
-export const metadata = DEFAULT_METADATA;
+export const metadata: Metadata = {
+	...DEFAULT_METADATA,
+	title: {
+		template: '%s | Journal - Kunal Keshan',
+		default: 'Journal - Kunal Keshan',
+	},
+};
 
 export default function RootLayout({
 	children,

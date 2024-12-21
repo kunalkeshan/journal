@@ -1,12 +1,18 @@
-## Using Nginx to Reverse Proxy
+---
+title: Using Nginx to Reverse Proxy
+description: Learn how to use Nginx as a reverse proxy server. Follow this guide to set up Nginx, configure reverse proxy settings, and understand its benefits for load balancing, security, and caching.
+date: 2024-11-20
+---
 
-### What is Nginx? [^1]
+# Using Nginx to Reverse Proxy
+
+## What is Nginx? [^1]
 
 Nginx (pronounced "engine-x") is a high-performance web server, reverse proxy server, and load balancer. 
 
 It is designed to handle a large number of concurrent connections efficiently and is often used to serve static files, manage load balancing, and reverse proxying requests to backend servers.
 
-### What is Reverse Proxy?
+## What is Reverse Proxy?
 
 A reverse proxy is a server that sits between client devices (like browsers or mobile apps) and backend servers. 
 
@@ -19,7 +25,7 @@ Its primary job is to forward client requests to appropriate backend services an
 - SSL Termination: Handle SSL/TLS encryption and decryption.
 - Caching: Cache content to improve response times and reduce load on backend servers.
 
-### Implementing Reverse Proxy
+## Implementing Reverse Proxy
 
 - Installing nginx [^2]
 
@@ -31,6 +37,7 @@ sudo apt install nginx
 ```
 
 On CentOS/Red Hat:
+
 ```shell
 sudo yum install nginx
 ```

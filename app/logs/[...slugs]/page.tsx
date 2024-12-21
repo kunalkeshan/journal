@@ -5,16 +5,22 @@ import path from 'path';
 import getAllMarkdownFiles from '@/lib/get-all-md-files';
 import { LOGS_DIR } from '@/config';
 import getMarkdownMetadata from '@/lib/get-md-metadata';
+import Link from 'next/link';
 
-const LogEntryPage = async ({ params }: { params: { slugs: string[] } }) => {
-	// https://nextjs.org/docs/messages/sync-dynamic-apis
-	const { slugs } = await params;
+const LogEntryPage = async ({
+	params,
+}: {
+	params?: Promise<{ slugs?: string[] }>;
+}) => {
+	// Destructure slugs from params
+	const { slugs } = (await params) ?? {};
 
-	let mdFilePath = path.join(LOGS_DIR, ...slugs) + '.md';
+	// Construct the file path
+	let mdFilePath = path.join(LOGS_DIR, ...slugs!) + '.md';
 	let mdfileExists = fs.existsSync(mdFilePath);
 
 	if (!mdfileExists) {
-		mdFilePath = path.join(LOGS_DIR, ...slugs) + '.mdx';
+		mdFilePath = path.join(LOGS_DIR, ...slugs!) + '.mdx';
 		mdfileExists = fs.existsSync(mdFilePath);
 	}
 
@@ -22,15 +28,25 @@ const LogEntryPage = async ({ params }: { params: { slugs: string[] } }) => {
 		return <main>File not found</main>;
 	}
 
+	// Read and render the Markdown/MDX file
 	const source = fs.readFileSync(mdFilePath, 'utf-8');
 	return (
-		<main className='prose'>
-			<Suspense fallback={<div>Loading...</div>}>
-				<MDXRemote
-					source={source}
-					options={{ parseFrontmatter: true }}
-				/>
-			</Suspense>
+		<main>
+			<div className='container mx-auto py-10 px-10 lg:px-0'>
+				<div className='prose mx-auto'>
+					<Suspense fallback={<div>Loading...</div>}>
+						<MDXRemote
+							source={source}
+							options={{ parseFrontmatter: true }}
+						/>
+					</Suspense>
+				</div>
+				<div className='flex justify-center mt-10'>
+					<Link href='/logs' prefetch={false}>
+						← Back to all logs
+					</Link>
+				</div>
+			</div>
 		</main>
 	);
 };
@@ -39,21 +55,13 @@ export default LogEntryPage;
 
 export async function generateStaticParams() {
 	const markdownFilePaths = getAllMarkdownFiles(LOGS_DIR);
-	// Example:
-	//   filePath = /absolute/path/to/your-project/logs/week1/entry1.md
-	//   relativePath = week1/entry1.md
-	//   slugArray = ["week1", "entry1"]
-	//
-	// We'll return { slug: ["week1", "entry1"] } for each file.
 	return markdownFilePaths.map((filePath) => {
-		// Make file path relative to LOGS_DIR
 		const relativePath = path.relative(LOGS_DIR, filePath);
-		// Remove ".md" or ".mdx" extension and split by path separator
 		const slugArray = relativePath
 			.replace(/\.(md|mdx)$/, '')
 			.split(path.sep);
 		return {
-			slug: slugArray,
+			slugs: slugArray, // Match the expected param name
 		};
 	});
 }
@@ -61,10 +69,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
 	params,
 }: {
-	params: { slugs: string[] };
+	params?: Promise<{ slugs?: string[] }>;
 }) {
-	const { slugs } = await params;
-	// https://nextjs.org/docs/messages/sync-dynamic-apis
-	const metadata = await getMarkdownMetadata(slugs);
+	const { slugs } = (await params) ?? {};
+	const metadata = await getMarkdownMetadata(slugs!);
 	return metadata;
 }

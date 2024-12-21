@@ -14,3 +14,9 @@ export function kebabToTitleCase(value: string): string {
 		})
 		.join(' ');
 }
+
+export function dateFormatter(date: Date) {
+	return new Intl.DateTimeFormat('en-In', {
+		dateStyle: 'medium',
+	}).format(date);
+}

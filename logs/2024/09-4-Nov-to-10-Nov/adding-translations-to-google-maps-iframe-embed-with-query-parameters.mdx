@@ -1,4 +1,10 @@
-## Adding Translations to Google Maps Iframe Embed with Query Parameters
+---
+title: Adding Translations to Google Maps Iframe Embed with Query Parameters
+description: Learn how to add translations to Google Maps iframe embeds using query parameters. Follow this guide to provide a localized map experience based on user language preferences.
+date: 2024-11-09
+---
+
+# Adding Translations to Google Maps Iframe Embed with Query Parameters
 
 When embedding a Google Maps iframe on a website, you might want to provide a localized experience by automatically translating map information based on the user's language preference. 
 
@@ -6,7 +12,7 @@ Fortunately, Google Maps allows for localization by adjusting a few parameters i
 
 Google Maps allows us to control the language through the pb query string instead. The language can be set by adjusting specific language parameters within the query.
 
-### Here's a breakdown of how this works and the code:
+## Here's a breakdown of how this works and the code:
 
 How Language Translation Works in Google Maps Embed URL
 
@@ -15,7 +21,7 @@ The Google Maps iframe URL has `5m2!1s{language_code}!2s{region_code`} within th
 The `{language_code}` (like en, ta, hi) sets the language.
 The `{region_code}` (like in for India) specifies the region.
 
-### Code Implementation
+## Code Implementation
 
 In your React component, you can make this dynamic by setting the `{language_code}` part of the pb string to `${locale}`, so users can see the map in their preferred language.
 
@@ -39,14 +45,14 @@ Setting locale based on user preference or browser language (like en, ta, hi) en
 
 This technique provides a smoother, more accessible experience, especially for multilingual websites.
 
-### Managing the locale Variable
+## Managing the locale Variable
 
 To populate the locale variable, you can use methods such as:
 
 - Detecting the user’s browser language via `navigator.language`. [^1]
 - Setting the language based on user preferences stored in a state or configuration file.
 
-### Other References
+## Other References
 
 - Code implementation at [Sundar Clinic's](https://sundarclinic.com/) Website: [Footer.tsx#L86](https://github.com/Sundar-Clinic/Main-Website/blob/bdcdefc1afa58bdd9d3228f32041c4892d2c9aae/layouts/Footer.tsx#L86)
 

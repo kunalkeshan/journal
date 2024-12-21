@@ -1,22 +1,28 @@
-## Adding Sanity Schema And Query Types To Embedded Studio In Nextjs
+---
+title: Adding Sanity Schema and Query Types to Embedded Studio in Next.js
+description: Learn how to add Sanity schema and query types to an embedded studio in Next.js. Follow this guide to generate and integrate types for a seamless development experience.
+date: 2024-10-11
+---
+
+# Adding Sanity Schema And Query Types To Embedded Studio In Nextjs
 
 > [!NOTE]
 > Sanity TypeGen was launched in beta in [sanity@3.34.0](https://github.com/sanity-io/sanity/releases/tag/v3.40.0) (Make sure sanity types are updated if you're working on an old project)
 > Typed content with Sanity TypeGen Course[^1]
 
-### Generate Schema
+## Generate Schema
 
 ```bash
 npx sanity@latest schema extract
 ```
 
-### Generate Types from Schema
+## Generate Types from Schema
 
 ```bash
 npx sanity@latest typegen generate
 ```
 
-### Modify input & types output destination 
+## Modify input & types output destination 
 
 Use the `sanity-typegen.json` in your project root to specify the following fields.
 
