@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-export const SITE_URL = new URL('https://journal.kunalkeshan.com');
+export const SITE_URL = new URL('https://journal.kunalkeshan.dev');
 
 export const DEFAULT_METADATA: Metadata = {
 	metadataBase: SITE_URL,
