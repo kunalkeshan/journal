@@ -24,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 					.replace(/\.(md|mdx)$/, '')
 					.split(path.sep);
 				return {
-					url: `${SITE_URL.href}/logs/${slugArray.join('/')}`,
+					url: `${SITE_URL.href}logs/${slugArray.join('/')}`,
 					lastModified: new Date(),
 					changeFrequency: 'monthly',
 					priority: 0.8,
