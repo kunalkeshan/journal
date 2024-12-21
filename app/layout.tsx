@@ -1,6 +1,6 @@
-import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import { DEFAULT_METADATA } from '@/config/site';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -12,11 +12,7 @@ const geistMono = Geist_Mono({
 	subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
-	title: 'Journal | Kunal Keshan',
-	description:
-		'Sharing my learnings, document helpful guides, and keep a record of various insights I come across. This space is dedicated to my continuous learning journey and serves as a valuable resource for anyone interested in the topics I explore.',
-};
+export const metadata = DEFAULT_METADATA;
 
 export default function RootLayout({
 	children,

@@ -1,4 +1,4 @@
-## How to Document a database? [^1]
+# How to Document a database? [^1]
 
 Got an insightful answer from Stackoverflow [^2].
 
