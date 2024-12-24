@@ -13,6 +13,7 @@
 		"assets": "node_modules/canvas/**/*"
 	},
 	"dependencies": {
+		"@heroicons/react": "^2.2.0",
 		"@mdx-js/loader": "^3.1.0",
 		"@mdx-js/react": "^3.1.0",
 		"@next/mdx": "^15.1.2",
