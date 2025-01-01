@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import fs from 'fs';
 import path from 'path';
+import remarkGfm from 'remark-gfm';
 import getAllMarkdownFiles from '@/lib/get-all-md-files';
 import { LOGS_DIR } from '@/config';
 import getMarkdownMetadata from '@/lib/get-md-metadata';
@@ -37,7 +38,10 @@ const LogEntryPage = async ({
 					<Suspense fallback={<div>Loading...</div>}>
 						<MDXRemote
 							source={source}
-							options={{ parseFrontmatter: true }}
+							options={{
+								parseFrontmatter: true,
+								mdxOptions: { remarkPlugins: [remarkGfm] },
+							}}
 						/>
 					</Suspense>
 				</div>
