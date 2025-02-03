@@ -10,45 +10,45 @@ To set up Husky, ESLint, Prettier, and lint-staged in your Next.js application t
 
 1. **Install Dependencies**: Begin by installing the necessary development dependencies:
 
-    ```bash
-    npm install --save-dev eslint prettier husky lint-staged eslint-plugin-prettier eslint-config-next @eslint/compat
-    ```
+   ```bash
+   npm install --save-dev eslint prettier husky lint-staged eslint-plugin-prettier eslint-config-next @eslint/compat
+   ```
 
 2. **Configure ESLint**: Next.js comes with ESLint pre-configured. To customize it, create or update the `eslint.config.mjs` file in your project's root directory:
 
-    ```javascript
-    import { dirname } from 'path';
-    import { fileURLToPath } from 'url';
-    import { FlatCompat } from '@eslint/eslintrc';
-    import prettier from 'eslint-plugin-prettier';
-    import { includeIgnoreFile } from '@eslint/compat';
-    import path from 'path';
+   ```javascript
+   import { dirname } from 'path';
+   import { fileURLToPath } from 'url';
+   import { FlatCompat } from '@eslint/eslintrc';
+   import prettier from 'eslint-plugin-prettier';
+   import { includeIgnoreFile } from '@eslint/compat';
+   import path from 'path';
 
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = dirname(__filename);
-    const gitignorePath = path.resolve(__dirname, '.gitignore');
+   const __filename = fileURLToPath(import.meta.url);
+   const __dirname = dirname(__filename);
+   const gitignorePath = path.resolve(__dirname, '.gitignore');
 
-    const compat = new FlatCompat({
-      baseDirectory: __dirname,
-    });
+   const compat = new FlatCompat({
+     baseDirectory: __dirname,
+   });
 
-    const eslintConfig = [
-      includeIgnoreFile(gitignorePath),
-      ...compat.config({
-        extends: ['next/core-web-vitals', 'next/typescript'],
-      }),
-      {
-        plugins: {
-          prettier,
-        },
-        rules: {
-          'prettier/prettier': 'warn',
-        },
-      },
-    ];
+   const eslintConfig = [
+     includeIgnoreFile(gitignorePath),
+     ...compat.config({
+       extends: ['next/core-web-vitals', 'next/typescript'],
+     }),
+     {
+       plugins: {
+         prettier,
+       },
+       rules: {
+         'prettier/prettier': 'warn',
+       },
+     },
+   ];
 
-    export default eslintConfig;
-    ```
+   export default eslintConfig;
+   ```
 
 This configuration extends Next.js's core web vitals and integrates Prettier to handle code formatting within ESLint. The `'prettier/prettier': 'warn'` rule will display Prettier issues as warnings during linting.
 
@@ -56,12 +56,12 @@ This configuration extends Next.js's core web vitals and integrates Prettier to 
 
 ```json
 {
-	"singleQuote": true,
-	"trailingComma": "es5",
-	"semi": true,
-	"useTabs": false,
-	"tabWidth": 2,
-	"endOfLine": "auto"
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "semi": true,
+  "useTabs": false,
+  "tabWidth": 2,
+  "endOfLine": "auto"
 }
 ```
 
@@ -69,53 +69,53 @@ Adjust these settings according to your project's style guidelines.
 
 4. **Set Up Husky**: Initialize Husky to manage Git hooks:
 
-    ```bash
-    npx husky install
-    ```
+   ```bash
+   npx husky install
+   ```
 
-    Add this to your `package.json` scripts to run Husky:
+   Add this to your `package.json` scripts to run Husky:
 
-    ```json
-    {
-    	"scripts": {
-    		"prepare": "husky"
-    	}
-    }
-    ```
+   ```json
+   {
+     "scripts": {
+       "prepare": "husky"
+     }
+   }
+   ```
 
-    Then, add a pre-commit hook:
+   Then, add a pre-commit hook:
 
-    ```bash
-    echo "npx lint-staged" > .husky/pre-commit
-    ```
+   ```bash
+   echo "npx lint-staged" > .husky/pre-commit
+   ```
 
-    This command sets up a pre-commit hook that will run `lint-staged` before each commit.
+   This command sets up a pre-commit hook that will run `lint-staged` before each commit.
 
 5. **Configure lint-staged**: Define the `lint-staged` configuration in your `package.json`:
 
-    ```json
-    {
-    	"lint-staged": {
-    		"**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"]
-    	}
-    }
-    ```
+   ```json
+   {
+     "lint-staged": {
+       "**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"]
+     }
+   }
+   ```
 
-    This setup ensures that for all staged JavaScript and TypeScript files, ESLint will attempt to fix any issues, and Prettier will format the code. If you have other file types you'd like to format (e.g., CSS, JSON), you can extend this configuration accordingly.
+   This setup ensures that for all staged JavaScript and TypeScript files, ESLint will attempt to fix any issues, and Prettier will format the code. If you have other file types you'd like to format (e.g., CSS, JSON), you can extend this configuration accordingly.
 
 6. **Add Scripts to `package.json`**: For convenience, add the following scripts to your `package.json`:
 
-    ```json
-    {
-    	"scripts": {
-    		"lint": "eslint .",
-    		"format": "prettier --write ."
-    	}
-    }
-    ```
+   ```json
+   {
+     "scripts": {
+       "lint": "eslint .",
+       "format": "prettier --write ."
+     }
+   }
+   ```
 
-    - `npm run lint`: Lints all files in the project.
-    - `npm run format`: Formats all files in the project using Prettier.
+   - `npm run lint`: Lints all files in the project.
+   - `npm run format`: Formats all files in the project using Prettier.
 
 By following these steps, your Next.js application will automatically check for ESLint rules and format code before staging changes. Additionally, it will perform a lint check as a pre-commit hook, ensuring that only properly formatted and linted code is committed to your repository.
 

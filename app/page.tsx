@@ -4,14 +4,14 @@ import { LOGS_DIR } from '@/config';
 import HomeLogs from '@/components/landing/logs';
 
 export default async function Home() {
-	const latestLogs = await getLatestMarkdownFiles({
-		dirPath: LOGS_DIR,
-		maxFiles: 4,
-	});
-	return (
-		<main>
-			<Hero />
-			<HomeLogs logs={latestLogs} />
-		</main>
-	);
+  const latestLogs = await getLatestMarkdownFiles({
+    dirPath: LOGS_DIR,
+    maxFiles: 4,
+  });
+  return (
+    <main>
+      <Hero />
+      <HomeLogs logs={latestLogs} />
+    </main>
+  );
 }

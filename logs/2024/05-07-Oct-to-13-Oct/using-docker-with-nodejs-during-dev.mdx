@@ -71,7 +71,7 @@ services:
     ports:
       - '5432:5432'
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ['CMD', 'pg_isready']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -99,9 +99,9 @@ $ docker compose -f docker-compose.dev.yml up --build
 
 ## Notes
 
-Since I used for development purpose, I addded `.dev` extension to each for clear separation of what it's being used for. 
+Since I used for development purpose, I addded `.dev` extension to each for clear separation of what it's being used for.
 
-For production docker images I prefer to directly use `Dockerfile` and `docker-compose.yml` instead. 
+For production docker images I prefer to directly use `Dockerfile` and `docker-compose.yml` instead.
 
 ## Other References
 
@@ -109,5 +109,7 @@ For production docker images I prefer to directly use `Dockerfile` and `docker-c
 - [How To Build a Node.js Application with Docker](https://www.digitalocean.com/community/tutorials/how-to-build-a-node-js-application-with-docker)
 
 [^1]: https://docs.docker.com/guides/language/nodejs/develop/
+
 [^2]: https://nodejs.org/en
+
 [^3]: https://www.docker.com/

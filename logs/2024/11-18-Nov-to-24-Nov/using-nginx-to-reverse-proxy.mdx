@@ -8,13 +8,13 @@ date: 2024-11-20
 
 ## What is Nginx? [^1]
 
-Nginx (pronounced "engine-x") is a high-performance web server, reverse proxy server, and load balancer. 
+Nginx (pronounced "engine-x") is a high-performance web server, reverse proxy server, and load balancer.
 
 It is designed to handle a large number of concurrent connections efficiently and is often used to serve static files, manage load balancing, and reverse proxying requests to backend servers.
 
 ## What is Reverse Proxy?
 
-A reverse proxy is a server that sits between client devices (like browsers or mobile apps) and backend servers. 
+A reverse proxy is a server that sits between client devices (like browsers or mobile apps) and backend servers.
 
 Its primary job is to forward client requests to appropriate backend services and return the server's response to the client.
 
@@ -83,6 +83,7 @@ http {
 ```
 
 - Explanation
+
   - `worker_processes auto;`: Dynamically determines the optimal number of worker processes based on the number of CPU cores available.
   - `worker_connections 1024;`: Sets the maximum number of simultaneous connections each worker process can handle. This effectively determines the total concurrent connections supported.
   - `listen 80;`: Tells Nginx to listen for incoming HTTP requests on port 80 (default for non-secure HTTP traffic).
@@ -107,4 +108,5 @@ sudo systemctl start nginx
 ```
 
 [^1]: [Beginner’s Guide](https://nginx.org/en/docs/beginners_guide.html)
+
 [^2]: [Installing Nginx on Windows — A Step-by-Step Guide](https://medium.com/@chandramuthuraj/installing-nginx-on-windows-a-step-by-step-guide-6750575c63e2)

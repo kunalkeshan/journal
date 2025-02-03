@@ -4,12 +4,12 @@ import { LOGS_DIR } from '@/config';
 import AllLogs from '@/components/logs/all-logs';
 
 const AllLogsPage = async () => {
-	const allLogs = await getAllMdFilesData({ dirPath: LOGS_DIR });
-	return (
-		<main>
-			<AllLogs logs={allLogs} />
-		</main>
-	);
+  const allLogs = await getAllMdFilesData({ dirPath: LOGS_DIR });
+  return (
+    <main>
+      <AllLogs logs={allLogs} />
+    </main>
+  );
 };
 
 export default AllLogsPage;

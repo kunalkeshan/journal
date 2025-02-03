@@ -6,22 +6,22 @@ date: 2025-01-01
 
 # URL forwarding to Google Drive Link using Cloudflare
 
-Make sure you have access to the DNS settings of your domain to be able to set this up in Cloudflare using page rules[^1]. You need to the following things in order to setup domain forwarding to a google drive link. 
+Make sure you have access to the DNS settings of your domain to be able to set this up in Cloudflare using page rules[^1]. You need to the following things in order to setup domain forwarding to a google drive link.
 
 eg: I'm forwarding `resume.kunalkeshan.dev` 👉 `https://drive.google.com/file/link-to-my-resume`
 
 ## Add Google's DNS to your Subdomain
 
-| Type | Name | Content | Proxied |
-| --- | --- | --- | :---: |
-| A | resume | 8.8.8.8 | ✔️ |
-| A | resume | 8.8.4.4 | ✔️ |
+| Type | Name   | Content | Proxied |
+| ---- | ------ | ------- | :-----: |
+| A    | resume | 8.8.8.8 |   ✔️    |
+| A    | resume | 8.8.4.4 |   ✔️    |
 
 After pointing the subdomain to Google's DNS[^2], make sure proxied is enabled, without this Cloudflare cannot forward the configured URL to the google drive link.
 
 ## Setup Page Rule to Redirect to the Google Drive
 
-Head over to `Manage Domain` > `Rules` > `Page Rules`, and create a new page rule with the following details. 
+Head over to `Manage Domain` > `Rules` > `Page Rules`, and create a new page rule with the following details.
 
 - URL as `resume.kunalkeshan.dev/`
 - Page Setting to be `Forwarding URL`
@@ -33,4 +33,5 @@ Give it a minute or 2 before testing it out and it should redirect to your assig
 Test mine out 👉 [resume.kunalkeshan.dev](https://resume.kunalkeshan.dev).
 
 [^1]: https://developers.cloudflare.com/rules/page-rules/
+
 [^2]: https://developers.google.com/speed/public-dns

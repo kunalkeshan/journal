@@ -6,29 +6,29 @@ date: 2024-05-09
 
 # Using Sanity CMS with Next.js App Router [^1]
 
-Have been using this for a while, really handy with clients who are looking for a custom solution with control over the content of the website (blogs, posts, team members, others...). 
+Have been using this for a while, really handy with clients who are looking for a custom solution with control over the content of the website (blogs, posts, team members, others...).
 
 Setup is straight forward, but writing the configs, schemas and queries does become time consuming for each new project (given how often I tend to use it with clients). Currently planning to create a template repo with next.js, sanity, shadcn-ui, eslist, prettier & husky for future usage, would make things a bit easier. (Hoping to finish this by next week!)
 
-The steps are straightforward to 
+The steps are straightforward to
 
 1. Update your `next.config.ts` file to allow images from Sanity.
 
 ```ts
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-images: {
+  images: {
     remotePatterns: [
-    {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
-    },
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+      },
     ],
-},
-experimental: {
+  },
+  experimental: {
     taint: true,
-},
-// ...other config settings
+  },
+  // ...other config settings
 };
 
 export default nextConfig;
@@ -48,13 +48,13 @@ Yes
 > Would you like an embedded Sanity Studio?
 Yes
 
-> Would you like to use the Next.js app directory for routes? 
+> Would you like to use the Next.js app directory for routes?
 Yes
 
 > What route do you want to use for the Studio?
 /studio
 
-> Select project template to use 
+> Select project template to use
 Blog (schema)
 
 > Would you like to add the project ID and dataset to your .env file?
@@ -75,10 +75,10 @@ NEXT_PUBLIC_SANITY_DATASET="production"
 ```ts
 // ./sanity/lib/fetch.ts
 
-import type { ClientPerspective, QueryParams } from "next-sanity";
-import { draftMode } from "next/headers";
+import type { ClientPerspective, QueryParams } from 'next-sanity';
+import { draftMode } from 'next/headers';
 
-import { client } from "./client";
+import { client } from './client';
 // import { token } from "./token";
 
 /**
@@ -90,24 +90,24 @@ import { client } from "./client";
 export async function sanityFetch<QueryResponse>({
   query,
   params = {},
-  perspective = draftMode().isEnabled ? "previewDrafts" : "published",
+  perspective = draftMode().isEnabled ? 'previewDrafts' : 'published',
   /**
    * Stega embedded Content Source Maps are used by Visual Editing by both the Sanity Presentation Tool and Vercel Visual Editing.
    * The Sanity Presentation Tool will enable Draft Mode when loading up the live preview, and we use it as a signal for when to embed source maps.
    * When outside of the Sanity Studio we also support the Vercel Toolbar Visual Editing feature, which is only enabled in production when it's a Vercel Preview Deployment.
    */
-  stega = perspective === "previewDrafts" ||
-    process.env.VERCEL_ENV === "preview",
+  stega = perspective === 'previewDrafts' ||
+    process.env.VERCEL_ENV === 'preview',
 }: {
   query: string;
   params?: QueryParams;
-  perspective?: Omit<ClientPerspective, "raw">;
+  perspective?: Omit<ClientPerspective, 'raw'>;
   stega?: boolean;
 }) {
-  if (perspective === "previewDrafts") {
+  if (perspective === 'previewDrafts') {
     return client.fetch<QueryResponse>(query, params, {
       stega,
-      perspective: "previewDrafts",
+      perspective: 'previewDrafts',
       // The token is required to fetch draft content
       // token,
       // The `previewDrafts` perspective isn't available on the API CDN
@@ -118,7 +118,7 @@ export async function sanityFetch<QueryResponse>({
   }
   return client.fetch<QueryResponse>(query, params, {
     stega,
-    perspective: "published",
+    perspective: 'published',
     // The `published` perspective is available on the API CDN
     useCdn: true,
     // Only enable Stega in production if it's a Vercel Preview Deployment, as the Vercel Toolbar supports Visual Editing
@@ -133,7 +133,7 @@ export async function sanityFetch<QueryResponse>({
 ```ts
 // ./sanity/lib/queries.ts
 
-import { groq } from "next-sanity";
+import { groq } from 'next-sanity';
 
 export const POSTS_QUERY = groq`*[_type == "post" && defined(slug)]`;
 
@@ -153,7 +153,7 @@ pnpm install @portabletext/react # sort out sanity blocks (h1, h2, p, u) to appr
 module.exports = {
   // ...other settings
   plugins: [require('@tailwindcss/typography')],
-}
+};
 ```
 
 Example of how to use all together:

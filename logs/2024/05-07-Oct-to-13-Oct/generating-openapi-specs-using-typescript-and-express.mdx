@@ -6,9 +6,9 @@ date: 2024-10-09
 
 # Generating OpenAPI Specs using Typescript and Express
 
-Working on a backend app right now, and needed to document the endpoints, and also didn't want to spend the time writing it from scratch. 
+Working on a backend app right now, and needed to document the endpoints, and also didn't want to spend the time writing it from scratch.
 
-Used [tspec](https://github.com/ts-spec/tspec) to integrate with the code, picked up the types from the controller and just had to define the resposnes and the types along with it. 
+Used [tspec](https://github.com/ts-spec/tspec) to integrate with the code, picked up the types from the controller and just had to define the resposnes and the types along with it.
 
 ## Steps to use tspec[^1]
 
@@ -21,7 +21,7 @@ $ pnpm i tspec
 2. Define a Spec
 
 ```typescript
-import { Tspec } from "tspec";
+import { Tspec } from 'tspec';
 
 /** Schema description defined by JSDoc */
 interface User {
@@ -35,12 +35,12 @@ export type UserApiSpec = Tspec.DefineApiSpec<{
   paths: {
     '/users/{id}': {
       get: {
-        summary: 'Get user by id',
-        path: { id: number },
-        responses: { 200: User },
-      },
-    },
-  }
+        summary: 'Get user by id';
+        path: { id: number };
+        responses: { 200: User };
+      };
+    };
+  };
 }>;
 ```
 
@@ -58,4 +58,5 @@ $ npx tspec generate --outputPath openapi.json
 For other options, view the documentation of tspec[^2].
 
 [^1]: https://github.com/ts-spec/tspec
+
 [^2]: https://ts-spec.github.io/tspec/
