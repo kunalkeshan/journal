@@ -73,6 +73,16 @@ Adjust these settings according to your project's style guidelines.
     npx husky install
     ```
 
+    Add this to your `package.json` scripts to run Husky:
+
+    ```json
+    {
+    	"scripts": {
+    		"prepare": "husky"
+    	}
+    }
+    ```
+
     Then, add a pre-commit hook:
 
     ```bash
