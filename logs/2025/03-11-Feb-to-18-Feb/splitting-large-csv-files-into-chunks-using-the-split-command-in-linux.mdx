@@ -1,0 +1,51 @@
+---
+title: Splitting Large CSV Files into Chunks Using the `split` Command in Linux  
+description: While migrating content from a large CSV file to a PostgreSQL database, I discovered how to efficiently split the file into manageable chunks using the `split` command. This approach speeds up processing and simplifies handling large datasets.  
+date: 2025-02-17  
+---
+
+# Splitting Large CSV Files into Chunks Using the `split` Command in Linux [^1]
+
+When working with large CSV files, such as during data migrations to a PostgreSQL database, processing the entire file at once can be time-consuming and resource-intensive. Splitting the file into smaller chunks allows for parallel processing and easier management of the data.
+
+## Using the `split` Command
+
+The `split` command is a powerful tool for dividing large files into smaller, more manageable pieces.
+
+### Example Command
+
+```bash
+split -l 5000 "sheet.csv" split --additional-suffix=.csv
+```
+
+This command splits the `sheet.csv` file into multiple smaller files, each containing 5,000 lines. The output files are named sequentially as `splitaa.csv`, `splitab.csv`, `splitac.csv`, and so on.
+
+### Explanation of Options:
+
+- `split`: The command used to split files.  
+- `-l 5000`: Splits the file into chunks of 5,000 lines each (`-l` stands for lines).  
+- `"sheet.csv"`: The input file to be split.  
+- `split`: The prefix for output files.  
+- `--additional-suffix=.csv`: Appends the `.csv` extension to each output file.  
+
+### Output Example:
+
+```
+splitaa.csv
+splitab.csv
+splitac.csv
+...
+```
+
+## Why Use `split` for Large Files?
+
+- **Efficient Processing:** Work on smaller chunks individually or in parallel.  
+- **Faster Database Imports:** Load smaller pieces into PostgreSQL with transactions.  
+- **Easy File Management:** Manage and track parts of large datasets conveniently.  
+
+## Practical Use Case
+
+While migrating a large dataset from a CSV file to a PostgreSQL database, I encountered performance issues due to the file's size. By using `split`, I divided the data into smaller parts and imported them one by one, significantly reducing processing time.  
+
+[^1]: - [Splitting large CSV files using `split`](https://stackoverflow.com/a/20721171/14187429)  
+      - [GeeksforGeeks: `split` Command in Linux with Examples](https://www.geeksforgeeks.org/split-command-in-linux-with-examples/)  
