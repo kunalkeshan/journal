@@ -1,0 +1,137 @@
+---
+title: Adding reCAPTCHA v3 to Your Next.js App Router Project
+description: Adding reCAPTCHA v3 to Next.js app router projects! Here's a quick, beginner-friendly guide covering setup, client-side integration, and server-side verification.
+date: 2025-03-18  
+---
+
+# Adding reCAPTCHA v3 to Your Next.js App Router Project
+
+This guide shows you how to add Google reCAPTCHA v3 to your Next.js app using the app router. reCAPTCHA v3 helps protect your site from bots without annoying user interactions.
+
+## 1. Get reCAPTCHA Keys [^1]
+
+1.  Go to [Google reCAPTCHA](https://cloud.google.com/security/products/recaptcha) and click "Get started."
+2.  Create a project and add your site's domains (including `localhost` for testing).
+3.  You'll get a **Site Key** (public) and **Secret Key** (private).
+
+**What are these keys?**
+
+* **Site Key:** Used in your website's code to show reCAPTCHA.
+* **Secret Key:** Used on your server to check if reCAPTCHA is valid.
+
+## 2. Set Up Environment Variables
+
+Create a `.env.local` file in your project's root and add:
+
+```
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=YOUR_SITE_KEY
+RECAPTCHA_SECRET_KEY=YOUR_SECRET_KEY
+```
+
+* `NEXT_PUBLIC_` makes the Site Key available in your client-side code.
+* The Secret Key stays only on your server.
+
+## 3. Install and Create Provider
+
+Install the `react-google-recaptcha-v3` [^2] library:
+
+```bash
+yarn install react-google-recaptcha-v3
+```
+
+Create a `RecaptchaProvider.tsx` component:
+
+```typescript jsx
+'use client';
+
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+
+const RecaptchaProvider = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <GoogleReCaptchaProvider reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}>
+      {children}
+    </GoogleReCaptchaProvider>
+  );
+};
+
+export default RecaptchaProvider;
+```
+
+## 4. Wrap Your App
+
+Wrap your app in `layout.tsx` (or specific pages) with the provider:
+
+```typescript jsx
+import RecaptchaProvider from './RecaptchaProvider';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <RecaptchaProvider>{children}</RecaptchaProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## 5. Get reCAPTCHA Token
+
+Use the `useGoogleReCaptcha` hook in your form component:
+
+```typescript jsx
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import { useState, useCallback, useEffect } from 'react';
+
+const { executeRecaptcha } = useGoogleReCaptcha();
+const [token, setToken] = useState<string | null>(null);
+
+const handleReCaptchaVerify = useCallback(async () => {
+  if (executeRecaptcha) {
+    const response = await executeRecaptcha('ContactForm');
+    setToken(response);
+  }
+}, [executeRecaptcha]);
+
+useEffect(() => {
+  handleReCaptchaVerify();
+}, [handleReCaptchaVerify]);
+
+// Call handleReCaptchaVerify before form submission
+```
+
+## 6. Verify Token on Server
+
+In your API route, verify the token:
+
+```typescript jsx
+const recaptchaResponse = await fetch(
+  `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${body.token}`,
+  { method: 'POST' }
+);
+const recaptchaData = await recaptchaResponse.json();
+
+if (!recaptchaData.success || recaptchaData.score < 0.5) {
+  return NextResponse.json({ message: 'reCAPTCHA failed' }, { status: 400 });
+}
+```
+
+* `recaptchaData.score` shows how likely it is a human (1.0 = human).
+* Adjust the `0.5` threshold as needed.
+
+## Conclusion
+
+reCAPTCHA v3 adds security to your Next.js app without interrupting users. Remember to keep your Secret Key safe.
+
+## Analytics
+
+After creating an account you can visit `https://www.google.com/recaptcha/admin/site/[ID]` to check the total number of requests and the suspicious requests part of the new reCAPTCHA tag you just added. 
+
+## Documentation
+
+* [Google reCAPTCHA](https://cloud.google.com/security/products/recaptcha)
+* `react-google-recaptcha-v3` (Find on npm or GitHub)
+
+[^1]: https://cloud.google.com/security/products/recaptcha
+[^2]: https://www.npmjs.com/package/react-google-recaptcha-v3
+
