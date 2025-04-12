@@ -1,0 +1,189 @@
+---
+title: Update Docker Compose Image Version with Bash Script on Google Cloud Compute Instance
+description: Learn how to automate Docker Compose image updates on your Google Cloud Compute Engine using a Bash script. This guide addresses issues with unauthenticated image pulls and provides troubleshooting tips.
+date: 2025-04-13
+---
+
+# Update Docker Compose Image Version with Bash Script on Google Cloud Compute Instance
+
+## Introduction
+
+Managing Docker Compose services on a Google Cloud Compute Engine instance can be tedious when you need to frequently update image versions. Every time I needed to update a version, I had to manually `cd` into the directory and run the `docker compose up` command. To streamline this process, I created a Bash script that automates these tasks.
+
+## The Solution: Automated Update Script
+
+Here's a Bash script that accepts the service name and version as arguments, updates the Docker Compose file, and then brings up the containers:
+
+```bash
+#!/bin/bash
+# update-service.sh
+#
+# This script updates a specified service in the docker-compose file to a new image version,
+# verifies that the new image exists (by attempting a docker pull), and then brings up the containers in detached mode.
+# Detailed error output is provided if any step fails.
+#
+# Usage: ./update-service.sh <service_name> <new_version>
+# Example:
+#   ./update-service.sh myapp v1.23
+
+# Define colors and emojis for output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+NC='\033[0m'        # No Color
+TICK="✔"
+CROSS="✖"
+
+# Check if two arguments are provided
+if [ $# -ne 2 ]; then
+  echo -e "${RED}${CROSS} Usage: $0 <service_name> <new_version>${NC}"
+  exit 1
+fi
+
+SERVICE_NAME="$1"
+NEW_VERSION="$2"
+COMPOSE_FILE="docker-compose.yml"
+
+# Check if the docker-compose file exists in the current directory
+if [ ! -f "$COMPOSE_FILE" ]; then
+  echo -e "${RED}${CROSS} Error: $COMPOSE_FILE not found in the current directory.${NC}"
+  exit 1
+fi
+
+# Verify that the specified service exists in the docker-compose file
+if ! grep -E "^[[:space:]]*${SERVICE_NAME}:" "$COMPOSE_FILE" > /dev/null; then
+  echo -e "${RED}${CROSS} Error: Service '$SERVICE_NAME' not found in $COMPOSE_FILE.${NC}"
+  exit 1
+fi
+
+# Extract the block corresponding to the specified service and then grab the first image line
+SERVICE_BLOCK=$(sed -n "/^[[:space:]]*${SERVICE_NAME}:/,/^[[:space:]]*[a-zA-Z0-9_-]+:/p" "$COMPOSE_FILE")
+IMAGE_LINE=$(echo "$SERVICE_BLOCK" | grep -m 1 -E "image:")
+
+if [ -z "$IMAGE_LINE" ]; then
+  echo -e "${RED}${CROSS} Error: Image line for service '$SERVICE_NAME' not found in $COMPOSE_FILE.${NC}"
+  exit 1
+fi
+
+# Extract the current full image string (e.g., asia-south1-docker.pkg.dev/my-project/myapp/myapp-web:v1.24.1-rc)
+CURRENT_IMAGE=$(echo "$IMAGE_LINE" | sed -E 's/.*image:[[:space:]]*//')
+
+# Derive the image base (everything before the colon) so that we update only the tag
+IMAGE_BASE=$(echo "$CURRENT_IMAGE" | sed -E 's/(.*):.*/\1/')
+
+# Construct the new image name
+NEW_IMAGE="${IMAGE_BASE}:${NEW_VERSION}"
+
+echo -e "${YELLOW}Checking if image ${NEW_IMAGE} exists by attempting to pull it...${NC}"
+# Capture the output of docker pull so that errors can be displayed
+PULL_OUTPUT=$(docker pull "$NEW_IMAGE" 2>&1)
+PULL_RESULT=$?
+
+if [ $PULL_RESULT -eq 0 ]; then
+  echo -e "${GREEN}${TICK} Image ${NEW_IMAGE} exists and was successfully pulled (or is already available).${NC}"
+else
+  echo -e "${RED}${CROSS} Error: Failed to pull image ${NEW_IMAGE}. Details:${NC}"
+  echo -e "${RED}$PULL_OUTPUT${NC}"
+  exit 1
+fi
+
+# Update the image tag in the docker-compose file using sed (scoping the change to the service block)
+sed -i -E "/^[[:space:]]*${SERVICE_NAME}:/,/^[[:space:]]*[a-zA-Z0-9_-]+:/ {
+  s|(image:[[:space:]]*${IMAGE_BASE}:)(v[0-9a-zA-Z\.\-]+)|\1${NEW_VERSION}|
+}" "$COMPOSE_FILE"
+
+if [ $? -eq 0 ]; then
+  echo -e "${GREEN}${TICK} Updated $COMPOSE_FILE: Service '$SERVICE_NAME' now uses version ${NEW_VERSION}.${NC}"
+else
+  echo -e "${RED}${CROSS} Error: Failed to update $COMPOSE_FILE.${NC}"
+  exit 1
+fi
+
+# Bring up the updated containers
+echo -e "${YELLOW}Starting Docker containers...${NC}"
+DOCKER_UP_OUTPUT=$(docker compose up -d 2>&1)
+DOCKER_UP_RESULT=$?
+
+if [ $DOCKER_UP_RESULT -eq 0 ]; then
+  echo -e "${GREEN}${TICK} Docker containers started successfully.${NC}"
+else
+  echo -e "${RED}${CROSS} Error: docker compose up failed. Details:${NC}"
+  echo -e "${RED}$DOCKER_UP_OUTPUT${NC}"
+  exit 1
+fi
+
+exit 0
+```
+
+## Issues Encountered and Solutions
+
+When I first tried to use this script, I encountered several issues that needed to be addressed. Here are the main challenges and their solutions:
+
+### 1. Authentication Issues with Google Artifact Registry
+
+When executing the script:
+
+```bash
+sudo ./update-service.sh myapp v1.23
+```
+
+I received this error:
+
+```
+Checking if image asia-south1-docker.pkg.dev/my-project/myapp/myapp-web:v1.23 exists by attempting to pull it...
+✖ Error: Failed to pull image asia-south1-docker.pkg.dev/my-project/myapp/myapp-web:v1.23. Details:
+Error response from daemon: Head "https://asia-south1-docker.pkg.dev/v2/my-project/myapp/myapp-web/manifests/v1.23": denied: Unauthenticated request. Unauthenticated requests do not have permission "artifactregistry.repositories.downloadArtifacts" on resource "projects/my-project/locations/asia-south1/repositories/myapp" (or it may not exist)
+```
+
+#### Solution: Configure Google Cloud Authentication
+
+To fix this, you need to ensure proper authentication with Google Artifact Registry:
+
+1. **Log in to Google Cloud:**
+   ```bash
+   gcloud auth login
+   ```
+
+2. **Configure Docker for the registry:**
+   ```bash
+   gcloud auth configure-docker asia-south1-docker.pkg.dev
+   ```
+
+### 2. Permission Issues with Sudo
+
+Running the script with `sudo` can cause authentication problems because the root user doesn't inherit your Docker credentials.
+
+#### Solution A: Run Without Sudo
+1. Add your user to the Docker group:
+   ```bash
+   sudo usermod -aG docker $USER
+   ```
+2. Log out and log back in
+3. Run the script without sudo:
+   ```bash
+   ./update-service.sh myapp v1.23
+   ```
+
+#### Solution B: Preserve Environment with Sudo
+Run the script while preserving environment variables:
+```bash
+sudo -E ./update-service.sh myapp v1.23
+```
+Or configure Docker for the root user:
+```bash
+sudo gcloud auth configure-docker asia-south1-docker.pkg.dev
+```
+
+### 3. Verifying Image Availability
+
+Before running the script, it's good practice to verify that the image exists and is accessible:
+
+```bash
+docker pull asia-south1-docker.pkg.dev/my-project/myapp/myapp-web:v1.23
+```
+
+If this command succeeds, you have proper access and the script should work correctly.
+
+## Conclusion
+
+This automated solution significantly streamlines the process of updating Docker Compose services. While I haven't set up a full CI/CD pipeline yet, this approach provides a practical interim solution that reduces manual intervention and potential errors. The script includes error handling and clear feedback, making it easier to identify and resolve issues when they occur.
