@@ -115,6 +115,30 @@ fi
 exit 0
 ```
 
+## Making the Script Executable
+
+Before you can run the script, you need to make it executable. This is a crucial step in Unix-like systems (including Linux) because:
+
+1. By default, new files are created without execute permissions
+2. The system requires explicit permission to execute files as a security measure
+3. Without execute permissions, you'll get a "Permission denied" error when trying to run the script
+
+To make the script executable, run:
+
+```bash
+chmod +x update-service.sh
+```
+
+This command:
+- `chmod`: Changes the mode/permissions of a file
+- `+x`: Adds execute permission
+- `update-service.sh`: The target file
+
+After making the script executable, you can run it using:
+```bash
+./update-service.sh myapp v1.23
+```
+
 ## Issues Encountered and Solutions
 
 When I first tried to use this script, I encountered several issues that needed to be addressed. Here are the main challenges and their solutions:
