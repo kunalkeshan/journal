@@ -3,7 +3,6 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import fs from 'fs';
 import path from 'path';
 import remarkGfm from 'remark-gfm';
-import getAllMarkdownFiles from '@/lib/get-all-md-files';
 import { LOGS_DIR } from '@/config';
 import getMarkdownMetadata from '@/lib/get-md-metadata';
 import Link from 'next/link';
@@ -57,16 +56,7 @@ const LogEntryPage = async ({
 
 export default LogEntryPage;
 
-export async function generateStaticParams() {
-  const markdownFilePaths = getAllMarkdownFiles(LOGS_DIR);
-  return markdownFilePaths.map((filePath) => {
-    const relativePath = path.relative(LOGS_DIR, filePath);
-    const slugArray = relativePath.replace(/\.(md|mdx)$/, '').split(path.sep);
-    return {
-      slugs: slugArray, // Match the expected param name
-    };
-  });
-}
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,

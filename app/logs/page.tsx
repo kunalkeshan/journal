@@ -13,3 +13,5 @@ const AllLogsPage = async () => {
 };
 
 export default AllLogsPage;
+
+export const revalidate = 3600;
