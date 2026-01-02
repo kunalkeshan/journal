@@ -1,0 +1,66 @@
+
+> journal@0.1.0 dev /app
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use, trying 3001 instead.
+   ▲ Next.js 15.1.11 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.2:3001
+
+ ✓ Starting...
+ ⚠ Invalid next.config.ts options detected:
+ ⚠     Unrecognized key(s) in object: 'turbopack'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ✓ Ready in 1379ms
+ ⚠ Webpack is configured while Turbopack is not, which may cause problems.
+ ⚠ See instructions if you need to configure Turbopack:
+  https://nextjs.org/docs/app/api-reference/next-config-js/turbo
+
+ ○ Compiling /logs ...
+ ✓ Compiled /logs in 7s
+ GET /logs 200 in 8430ms
+ ○ Compiling /api/logs ...
+ ✓ Compiled /api/logs in 2.1s
+ GET /api/logs?page=1&limit=8 200 in 3631ms
+ ✓ Compiled /api/og in 228ms
+ GET /api/og?title=Deleting%20Desktop%20Ini%20Files%20Using%20Bash 200 in 752ms
+ GET /api/og?title=Adding%20Recaptcha%20V3%20To%20Your%20Nextjs%20App%20Router%20Project%20A%20Practical%20Guide 200 in 767ms
+ GET /api/og?title=Url%20Forwarding%20To%20Google%20Drive%20Link%20Using%20Cloudflare 200 in 826ms
+ GET /api/og?title=Setting%20Up%20Husky%20Eslint%20Prettier%20Nextjs%20Application 200 in 887ms
+ GET /api/og?title=Setting%20Up%20Automation%20In%20Kit 200 in 943ms
+ GET /api/og?title=Clean%20Unnecessary%20Files%20From%20C%20Drive 200 in 980ms
+ GET /api/og?title=Splitting%20Large%20Csv%20Files%20Into%20Chunks%20Using%20The%20Split%20Command%20In%20Linux 200 in 1058ms
+ GET /api/og?title=Update%20Docker%20Compose%20Image%20Version%20With%20Bash%20Script%20Google%20Cloud 200 in 1114ms
+ GET /api/logs?page=2&limit=8 200 in 1239ms
+ GET /api/og?title=Guide%20To%20Docker%20System%20Cleanup 200 in 126ms
+ GET /api/og?title=410%20Response%20Code 200 in 218ms
+ GET /api/og?title=Plans 200 in 259ms
+ GET /api/og?title=Using%20Nginx%20To%20Reverse%20Proxy 200 in 328ms
+ GET /api/og?title=Adding%20Translations%20To%20Google%20Maps%20Iframe%20Embed%20With%20Query%20Parameters 200 in 390ms
+ GET /api/og?title=Uploading%20Pdf%20Files%20To%20S3%20Via%20Signed%20Url%20In%20Nextjs 200 in 465ms
+ GET /api/og?title=Using%20S3%20Storage%20Plugin%20In%20Payload%20Cms%20With%20Nextjs 200 in 95ms
+ GET /api/logs?page=3&limit=8 200 in 419ms
+ GET /api/og?title=Testing%20In%20Nextjs%20While%20Using%20Next%20Intl%20With%20Cypress 200 in 158ms
+ GET /api/og?title=Fetching%20Remote%20Branches%20In%20Local 200 in 203ms
+ GET /api/og?title=Nit%20Pick%20Commits 200 in 253ms
+ GET /api/og?title=Generating%20Openapi%20Specs%20Using%20Typescript%20And%20Express 200 in 320ms
+ GET /api/og?title=Tagging 200 in 364ms
+ GET /api/og?title=Adding%20Sanity%20Schema%20And%20Query%20Types%20To%20Embedded%20Studio%20In%20Nextjs 200 in 420ms
+ GET /api/og?title=Picking%20Up%20Sequelize%20(again) 200 in 242ms
+ GET /api/logs?page=4&limit=8 200 in 534ms
+ GET /api/og?title=Update 200 in 124ms
+ GET /api/og?title=Using%20Docker%20With%20Nodejs%20During%20Dev 200 in 165ms
+ GET /api/og?title=Focus%20Psuedo%20Selectors 200 in 220ms
+ GET /api/og?title=A%20Successful%20Git%20Branching%20Model 200 in 265ms
+ GET /api/og?title=Back%20To%20Cs50 200 in 306ms
+ GET /api/og?title=Masking%20Images%20Using%20Svgs 200 in 358ms
+ GET /api/og?title=Styling%20Scrollbar%20Using%20Tailwind%20Classes 200 in 282ms
+ GET /api/logs?page=5&limit=8 200 in 389ms
+ GET /api/og?title=Template%20Object%20In%20Nextjs%20Metadata%20Config 200 in 435ms
+ GET /api/og?title=Using%20Sanity%20Cms%20With%20Nextjs%20App%20Router 200 in 127ms
+ GET /api/og?title=Diff%20Btwn%20Captions%20And%20Subtitles 200 in 171ms
+ GET /api/og?title=Adding%20Captions%20And%20Subtitles%20To%20Html%20Video 200 in 218ms
+ GET /api/og?title=Video%20Transcription 200 in 268ms
+ GET /api/og?title=How%20To%20Document%20A%20Database 200 in 311ms
+ GET /api/og?title=Work%20Updates 200 in 344ms
+ GET /api/og?title=Editing%20Time%20For%20Past%20Commit%20Messages 200 in 138ms

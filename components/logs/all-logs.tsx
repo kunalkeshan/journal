@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import LogCard from './card';
 import { getAllMdFilesData } from '@/lib/get-all-md-files-data';
-import { useQueryState } from 'nuqs';
+import { parseAsInteger, useQueryState } from 'nuqs';
 import { Spinner } from '@/components/ui/spinner';
 import {
   Empty,
@@ -19,31 +19,80 @@ import {
   InputGroupInput,
   InputGroupAddon,
 } from '@/components/ui/input-group';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import { useEffect, useMemo } from 'react';
+import { DOTS, generatePaginationRange } from '@/lib/pagination';
 
 type Logs = Awaited<ReturnType<typeof getAllMdFilesData>>;
 
-interface Props extends React.HTMLProps<HTMLDivElement> {
+interface PaginatedLogsResponse {
   logs: Logs;
+  totalPages: number;
 }
 
-const fetchSearchResults = async (query: string): Promise<Logs> => {
-  if (!query) {
-    return [];
-  }
-  const { data } = await axios.get<Logs>(`/api/search?q=${query}`);
+const fetchLogs = async (
+  page: number,
+  limit: number
+): Promise<PaginatedLogsResponse> => {
+  const { data } = await axios.get<PaginatedLogsResponse>(
+    `/api/logs?page=${page}&limit=${limit}`
+  );
   return data;
 };
 
-const AllLogs: React.FC<Props> = ({ logs }) => {
-  const [searchQuery, setSearchQuery] = useQueryState('q');
+const fetchSearchResults = async (
+  query: string,
+  page: number,
+  limit: number
+): Promise<PaginatedLogsResponse> => {
+  if (!query) {
+    return { logs: [], totalPages: 0 };
+  }
+  const { data } = await axios.get<PaginatedLogsResponse>(
+    `/api/search?q=${query}&page=${page}&limit=${limit}`
+  );
+  return data;
+};
 
-  const { data: searchResults, isLoading } = useQuery({
-    queryKey: ['searchResults', searchQuery],
-    queryFn: () => fetchSearchResults(searchQuery ?? ''),
-    enabled: !!searchQuery,
+const AllLogs: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useQueryState('q');
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+
+  useEffect(() => {
+    if (searchQuery) {
+      setPage(1);
+    }
+  }, [searchQuery, setPage]);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['logs', searchQuery, page],
+    queryFn: () =>
+      searchQuery
+        ? fetchSearchResults(searchQuery, page, 8)
+        : fetchLogs(page, 8),
   });
 
-  const logsToDisplay = searchQuery ? searchResults : logs;
+  const logsToDisplay = data?.logs;
+  const totalPages = data?.totalPages ?? 1;
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+    }
+  };
+
+  const paginationRange = useMemo(
+    () => generatePaginationRange({ currentPage: page, totalPages }),
+    [page, totalPages]
+  );
 
   return (
     <div className="w-full py-10 px-10 lg:px-20">
@@ -56,7 +105,7 @@ const AllLogs: React.FC<Props> = ({ logs }) => {
             <InputGroupInput
               placeholder="Search logs..."
               value={searchQuery ?? ''}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value || null)}
             />
             <InputGroupAddon>
               <SearchIcon className="size-4" />
@@ -68,11 +117,69 @@ const AllLogs: React.FC<Props> = ({ logs }) => {
             <Spinner />
           </div>
         ) : logsToDisplay && logsToDisplay.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {logsToDisplay.map((log, index) => (
-              <LogCard log={log} key={`all-logs-log-page-${index}`} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {logsToDisplay.map((log, index) => (
+                <LogCard log={log} key={`all-logs-log-page-${index}`} />
+              ))}
+            </div>
+            {totalPages > 1 && (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(page - 1);
+                      }}
+                      className={
+                        page <= 1 ? 'pointer-events-none opacity-50' : ''
+                      }
+                    />
+                  </PaginationItem>
+                  {paginationRange.map((pageNumber, index) => {
+                    if (pageNumber === DOTS) {
+                      return (
+                        <PaginationItem key={`dots-${index}`}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+
+                    return (
+                      <PaginationItem key={pageNumber}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlePageChange(pageNumber as number);
+                          }}
+                          isActive={page === pageNumber}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(page + 1);
+                      }}
+                      className={
+                        page >= totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : ''
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </>
         ) : (
           <Empty>
             <EmptyHeader>
