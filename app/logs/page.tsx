@@ -1,11 +1,8 @@
 import React, { Suspense } from 'react';
-import { getAllMdFilesData } from '@/lib/get-all-md-files-data';
-import { LOGS_DIR } from '@/config';
 import AllLogs from '@/components/logs/all-logs';
 import { Spinner } from '@/components/ui/spinner';
 
-const AllLogsPage = async () => {
-  const allLogs = await getAllMdFilesData({ dirPath: LOGS_DIR });
+const AllLogsPage = () => {
   return (
     <main>
       <Suspense
@@ -15,12 +12,10 @@ const AllLogsPage = async () => {
           </div>
         }
       >
-        <AllLogs logs={allLogs} />
+        <AllLogs />
       </Suspense>
     </main>
   );
 };
 
 export default AllLogsPage;
-
-export const revalidate = 3600;
