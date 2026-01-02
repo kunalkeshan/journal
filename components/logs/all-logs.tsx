@@ -1,11 +1,50 @@
-import { getAllMdFilesData } from '@/lib/get-all-md-files-data';
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import LogCard from './card';
+import { getAllMdFilesData } from '@/lib/get-all-md-files-data';
+import { useQueryState } from 'nuqs';
+import { Spinner } from '@/components/ui/spinner';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
+import { SearchIcon } from 'lucide-react';
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+} from '@/components/ui/input-group';
+
+type Logs = Awaited<ReturnType<typeof getAllMdFilesData>>;
 
 interface Props extends React.HTMLProps<HTMLDivElement> {
-  logs: Awaited<ReturnType<typeof getAllMdFilesData>>;
+  logs: Logs;
 }
 
+const fetchSearchResults = async (query: string): Promise<Logs> => {
+  if (!query) {
+    return [];
+  }
+  const { data } = await axios.get<Logs>(`/api/search?q=${query}`);
+  return data;
+};
+
 const AllLogs: React.FC<Props> = ({ logs }) => {
+  const [searchQuery, setSearchQuery] = useQueryState('q');
+
+  const { data: searchResults, isLoading } = useQuery({
+    queryKey: ['searchResults', searchQuery],
+    queryFn: () => fetchSearchResults(searchQuery ?? ''),
+    enabled: !!searchQuery,
+  });
+
+  const logsToDisplay = searchQuery ? searchResults : logs;
+
   return (
     <div className="w-full py-10 px-10 lg:px-20">
       <div className="container mx-auto flex flex-col gap-14">
@@ -13,12 +52,40 @@ const AllLogs: React.FC<Props> = ({ logs }) => {
           <h1 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
             All Logs
           </h1>
+          <InputGroup>
+            <InputGroupInput
+              placeholder="Search logs..."
+              value={searchQuery ?? ''}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <InputGroupAddon>
+              <SearchIcon className="size-4" />
+            </InputGroupAddon>
+          </InputGroup>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {logs.map((log, index) => (
-            <LogCard log={log} key={`all-logs-log-page-${index}`} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center">
+            <Spinner />
+          </div>
+        ) : logsToDisplay && logsToDisplay.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {logsToDisplay.map((log, index) => (
+              <LogCard log={log} key={`all-logs-log-page-${index}`} />
+            ))}
+          </div>
+        ) : (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <SearchIcon className="size-12" />
+              </EmptyMedia>
+              <EmptyTitle>No results found</EmptyTitle>
+              <EmptyDescription>
+                Try searching for something else.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        )}
       </div>
     </div>
   );

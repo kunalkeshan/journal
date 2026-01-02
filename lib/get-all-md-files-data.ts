@@ -13,6 +13,7 @@ interface MdFileEntry {
   slug: string;
   image: string;
   frontmatter: LogMetadata | null;
+  content: string;
 }
 
 export async function getAllMdFilesData({
@@ -122,6 +123,7 @@ export async function getAllMdFilesData({
             `/api/og?title=${kebabToTitleCase(path.parse(filePath).name)}`
           ),
           frontmatter,
+          content: fileContents,
         });
       }
     }

@@ -130,11 +130,13 @@ chmod +x update-service.sh
 ```
 
 This command:
+
 - `chmod`: Changes the mode/permissions of a file
 - `+x`: Adds execute permission
 - `update-service.sh`: The target file
 
 After making the script executable, you can run it using:
+
 ```bash
 ./update-service.sh myapp v1.23
 ```
@@ -164,6 +166,7 @@ Error response from daemon: Head "https://asia-south1-docker.pkg.dev/v2/my-proje
 To fix this, you need to ensure proper authentication with Google Artifact Registry:
 
 1. **Log in to Google Cloud:**
+
    ```bash
    gcloud auth login
    ```
@@ -178,6 +181,7 @@ To fix this, you need to ensure proper authentication with Google Artifact Regis
 Running the script with `sudo` can cause authentication problems because the root user doesn't inherit your Docker credentials.
 
 #### Solution A: Run Without Sudo
+
 1. Add your user to the Docker group:
    ```bash
    sudo usermod -aG docker $USER
@@ -189,11 +193,15 @@ Running the script with `sudo` can cause authentication problems because the roo
    ```
 
 #### Solution B: Preserve Environment with Sudo
+
 Run the script while preserving environment variables:
+
 ```bash
 sudo -E ./update-service.sh myapp v1.23
 ```
+
 Or configure Docker for the root user:
+
 ```bash
 sudo gcloud auth configure-docker asia-south1-docker.pkg.dev
 ```

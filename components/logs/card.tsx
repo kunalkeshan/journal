@@ -9,6 +9,11 @@ interface Props extends React.HTMLProps<typeof Link> {
 }
 
 const LogCard: React.FC<Props> = ({ log }) => {
+  const date =
+    log?.frontmatter?.date && typeof log.frontmatter.date === 'string'
+      ? new Date(log.frontmatter.date)
+      : log?.frontmatter?.date;
+
   return (
     <Link
       href={`/logs/${log?.slug}`}
@@ -28,9 +33,9 @@ const LogCard: React.FC<Props> = ({ log }) => {
       <p className="text-muted-foreground text-base line-clamp-2">
         {log?.frontmatter?.description}
       </p>
-      {log?.frontmatter?.date && (
+      {date && (
         <p className="text-muted-foreground text-sm">
-          {dateFormatter(log?.frontmatter?.date)}
+          {dateFormatter(date as Date)}
         </p>
       )}
     </Link>
