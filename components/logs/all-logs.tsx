@@ -14,6 +14,11 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { SearchIcon } from 'lucide-react';
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+} from '@/components/ui/input-group';
 
 type Logs = Awaited<ReturnType<typeof getAllMdFilesData>>;
 
@@ -47,13 +52,16 @@ const AllLogs: React.FC<Props> = ({ logs }) => {
           <h1 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
             All Logs
           </h1>
-          <input
-            type="text"
-            placeholder="Search logs..."
-            value={searchQuery ?? ''}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-4 py-2 border rounded-md"
-          />
+          <InputGroup>
+            <InputGroupInput
+              placeholder="Search logs..."
+              value={searchQuery ?? ''}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <InputGroupAddon>
+              <SearchIcon className="size-4" />
+            </InputGroupAddon>
+          </InputGroup>
         </div>
         {isLoading ? (
           <div className="flex items-center justify-center">
