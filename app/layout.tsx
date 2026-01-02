@@ -4,6 +4,7 @@ import { DEFAULT_METADATA } from '@/config/site';
 import type { Metadata } from 'next';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import Providers from '@/components/providers';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -33,7 +34,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <NuqsAdapter>
+          <Providers>{children}</Providers>
+        </NuqsAdapter>
       </body>
       <GoogleAnalytics gaId="G-T9M92SXSYT" />
     </html>

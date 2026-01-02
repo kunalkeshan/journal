@@ -1,10 +1,19 @@
 'use client';
 
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import LogCard from './card';
 import { getAllMdFilesData } from '@/lib/get-all-md-files-data';
+import { useQueryState } from 'nuqs';
+import { Spinner } from '@/components/ui/spinner';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
+import { SearchIcon } from 'lucide-react';
 
 type Logs = Awaited<ReturnType<typeof getAllMdFilesData>>;
 
@@ -21,11 +30,11 @@ const fetchSearchResults = async (query: string): Promise<Logs> => {
 };
 
 const AllLogs: React.FC<Props> = ({ logs }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useQueryState('q');
 
   const { data: searchResults, isLoading } = useQuery({
     queryKey: ['searchResults', searchQuery],
-    queryFn: () => fetchSearchResults(searchQuery),
+    queryFn: () => fetchSearchResults(searchQuery ?? ''),
     enabled: !!searchQuery,
   });
 
@@ -41,19 +50,33 @@ const AllLogs: React.FC<Props> = ({ logs }) => {
           <input
             type="text"
             placeholder="Search logs..."
-            value={searchQuery}
+            value={searchQuery ?? ''}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="px-4 py-2 border rounded-md"
           />
         </div>
         {isLoading ? (
-          <div>Loading...</div>
-        ) : (
+          <div className="flex items-center justify-center">
+            <Spinner />
+          </div>
+        ) : logsToDisplay && logsToDisplay.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {logsToDisplay?.map((log, index) => (
+            {logsToDisplay.map((log, index) => (
               <LogCard log={log} key={`all-logs-log-page-${index}`} />
             ))}
           </div>
+        ) : (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <SearchIcon className="size-12" />
+              </EmptyMedia>
+              <EmptyTitle>No results found</EmptyTitle>
+              <EmptyDescription>
+                Try searching for something else.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         )}
       </div>
     </div>
