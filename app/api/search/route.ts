@@ -17,9 +17,9 @@ export async function GET(req: NextRequest) {
   const allLogs = await getAllMdFilesData({ dirPath: LOGS_DIR });
 
   const fuse = new Fuse(allLogs, {
-    keys: ['title', 'content'],
+    keys: ['frontmatter.title', 'content'],
     includeScore: true,
-    threshold: 0.3,
+    threshold: 0.4,
   });
 
   const results = fuse.search(query);
